@@ -481,6 +481,13 @@
           "title": "Generate Community Report"
         }
       }
+    },
+    "generate_report": {
+      "properties": {
+        "template_path": {
+          "default": "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
+        }
+      }
     }
   },
   "$defs": {
