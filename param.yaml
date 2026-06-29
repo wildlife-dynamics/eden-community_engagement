@@ -29,4 +29,4 @@ events:
 #   var: ""  # Feature group name in EarthRanger (e.g. adjudication areas, chiefdoms, forest clusters)
 
 generate_report:
-  template_path: "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
+  template_path: "/Users/zak/Documents/w-dynamics/eden-community_engagement/resources/templates/community_engagement_report_template.docx"
