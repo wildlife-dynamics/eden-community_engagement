@@ -1,13 +1,14 @@
 # Community Engagement Workflow
 
-Pulls community meeting events from EarthRanger and generates `.docx` reports with meeting statistics, participant breakdowns, and a choropleth map of meeting locations.
+Pulls community meeting events from EarthRanger and generates a dashboard and `.docx` reports with meeting statistics, participant breakdowns, and a choropleth map of meeting locations.
 
-Reports are produced per grouper combination — by quarter, month, location, or any combination. If no groupers are set, a single report covering the full time range is produced.
+Reports and dashboard widgets are produced per grouper combination — by quarter, month, location, or any combination. If no groupers are set, a single report covering the full time range is produced.
 
 ## Outputs
 
 - `Community_Report_{period}_{location}.docx` — one per group
-- Supporting charts: box plot, gender pie chart, topics bar chart, choropleth map
+- **Dashboard** — stat cards (total meetings, participants, median), box plot, gender pie chart, topics bar chart, choropleth map
+- Supporting chart images: box plot, gender pie chart, topics bar chart, choropleth map
 
 ## Configuration
 
