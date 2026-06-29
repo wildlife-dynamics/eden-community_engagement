@@ -42,7 +42,7 @@ rjsf-overrides:
     events.properties.event_types.default:
       - community_meeting
 
-    generate_report.properties.template_path.default: "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
+    DOCX Report.properties.generate_report.properties.template_path.default: "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
 
     Choropleth Map.properties.choropleth_colormap.properties.max_classes.default: 5
     Choropleth Map.properties.choropleth_colormap.properties.max_classes.description: "Maximum number of colour classes for the choropleth (Natural Breaks). Automatically reduced if fewer unique values exist in the data."

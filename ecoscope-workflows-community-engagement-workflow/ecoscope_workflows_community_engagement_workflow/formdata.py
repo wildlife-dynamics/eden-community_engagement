@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, List, Literal, Optional, Union
+from typing import List, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, confloat, constr
 
@@ -240,12 +240,6 @@ class DOCXReport(BaseModel):
     )
 
 
-class GenerateReport1(BaseModel):
-    template_path: Optional[Any] = (
-        "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
-    )
-
-
 class EarthRangerConnection(BaseModel):
     name: str = Field(..., title="Data Source")
 
@@ -324,4 +318,3 @@ class FormData(BaseModel):
         alias="DOCX Report",
         description="Per-group community engagement report (one .docx per grouper combination).",
     )
-    generate_report: Optional[GenerateReport1] = None

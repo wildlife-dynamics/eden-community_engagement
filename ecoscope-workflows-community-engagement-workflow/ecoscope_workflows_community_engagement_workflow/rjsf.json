@@ -471,7 +471,8 @@
             "template_path": {
               "title": "Template Path",
               "type": "string",
-              "description": "Absolute path to the .docx Jinja2 template file."
+              "description": "Absolute path to the .docx Jinja2 template file.",
+              "default": "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
             }
           },
           "required": [
@@ -479,13 +480,6 @@
           ],
           "type": "object",
           "title": "Generate Community Report"
-        }
-      }
-    },
-    "generate_report": {
-      "properties": {
-        "template_path": {
-          "default": "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
         }
       }
     }
