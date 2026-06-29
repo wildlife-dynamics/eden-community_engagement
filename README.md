@@ -1,20 +1,25 @@
 # Community Engagement Workflow
 
-An [ecoscope-workflows](https://github.com/wildlife-dynamics/ecoscope-workflows) workflow that connects to EarthRanger, pulls community meeting events, and produces a dashboard and per-group `.docx` reports.
+An [ecoscope-workflows](https://github.com/wildlife-dynamics/ecoscope-workflows) workflow that turns your EarthRanger community meeting data into ready-to-share reports and a live dashboard — with no manual data wrangling.
 
 ---
 
-## What it does
+## What you get
 
-The workflow fetches resolved community meeting events for a configured time range, processes the event details (participants, gender breakdown, meeting topics, location), then groups and analyses the data. For each group it renders a box plot, gender pie chart, topics bar chart, and choropleth map — and assembles these into a Word report and a dashboard.
+Point this workflow at your EarthRanger site and it will fetch all your resolved community meeting events for the period you choose. It processes the raw event data — pulling out participant counts, gender breakdowns, meeting topics, and locations — then groups everything however you like: by quarter, by month, by location, or any combination.
 
-Groupers determine how many reports are produced. With a quarterly grouper, you get one report per quarter. With a location grouper, one per location. Groupers can be combined, or omitted entirely to produce a single report covering the full time range.
+For each group, you get:
+
+- A **Word report** (`.docx`) with a summary table (total meetings, total participants, median participants per meeting with IQR), a box plot of participant distribution, a gender pie chart, a topics bar chart, and a choropleth map showing meeting frequency across geographic areas such as adjudication areas, chiefdoms, or forest clusters.
+- A **dashboard** that brings all the charts and stat cards together across groups — useful for a quick overview without opening individual reports.
+
+If you don't configure any groupers, the workflow treats all your data as one group and produces a single report and dashboard.
 
 ---
 
 ## Outputs
 
-Written to `ECOSCOPE_WORKFLOWS_RESULTS`:
+Everything is written to `ECOSCOPE_WORKFLOWS_RESULTS`:
 
 | File | Description |
 |------|-------------|
@@ -33,7 +38,7 @@ Edit `param.yaml` before running:
 ```yaml
 er_client:
   data_source:
-    name: "olokeri"             # EarthRanger connection name
+    name: "olokeri"             # your EarthRanger connection name
 
 time_range:
   timezone:
@@ -46,25 +51,25 @@ time_range:
 
 groupers:
   groupers:
-    - temporal_index: "__quarter__"         # quarter | __semester__ | %Y | %Y-%m
-  # - index_name: meeting_location_level_one  # or group by location
+    - temporal_index: "__quarter__"           # quarter | __semester__ | %Y | %Y-%m
+  # - index_name: meeting_location_level_one  # group by location instead, or in addition
 
 events:
   event_types:
-    - "community_meeting_new"
+    - "community_meeting_new"   # your EarthRanger event type name
 
 generate_report:
-  template_path: "/path/to/template.docx"  # local path or HTTPS URL
+  template_path: "/path/to/template.docx"    # local path or HTTPS URL
 ```
 
-The default report template lives at `resources/templates/community_engagement_report_template.docx`. It is a Jinja2-powered Word template and can be referenced by local path or public HTTPS URL.
+The report template at `resources/templates/community_engagement_report_template.docx` is a Jinja2-powered Word template. You can reference it by local path or host it somewhere and pass an HTTPS URL — the workflow handles the download automatically.
 
 ---
 
 ## Compile & run
 
 ```bash
-# Recompile after changes to spec.yaml
+# Recompile after any changes to spec.yaml
 bash dev/recompile.sh --install
 
 # Run
