@@ -1,12 +1,1009 @@
-id:  # Unique workflow identifier (kebab-case)
-requirements: # Package dependencies with channels
-  - name: ecoscope-workflows-core
-    version: "0.18.0"
-    channel: https://repo.prefix.dev/ecoscope-workflows/
+id: community_engagement
 
-# List of tasks in execution order
+rjsf-overrides:
+  $defs:
+    ValueGrouper.properties.index_name.oneOf:
+      - const: meeting_location_level_one
+        title: Adjudication / Camp / Chiefdom
+
+    # Old ValueGrouper-only approach (replaced by TemporalGrouper):
+    # ValueGrouper.properties.index_name.oneOf:
+    #   - const: quarter
+    #     title: Time (Quarter)
+    #   - const: meeting_location_level_one
+    #     title: Adjudication / Camp / Chiefdom
+
+  uiSchema:
+    groupers.groupers.items.anyOf:
+      - ui:options:
+          label: false
+      - ui:options:
+          label: false
+
+  properties:
+    groupers.properties.groupers.items.anyOf:
+      - "$ref": "#/$defs/TemporalGrouper"
+      - "$ref": "#/$defs/ValueGrouper"
+
+    # Old ValueGrouper-only restriction:
+    # groupers.properties.groupers.items.anyOf:
+    #   - "$ref": "#/$defs/ValueGrouper"
+
+    groupers.properties.groupers.default:
+      - temporal_index: "__quarter__"
+      # - index_name: meeting_location_level_one
+
+    # Old default (quarter as hardcoded ValueGrouper):
+    # groupers.properties.groupers.default:
+    #   - index_name: quarter
+    #   - index_name: meeting_location_level_one
+
+    events.properties.event_types.description: ""
+    events.properties.event_types.default:
+      - community_meeting
+
+    generate_report.properties.template_path.default: "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
+
+    Choropleth Map.properties.choropleth_colormap.properties.max_classes.default: 5
+    Choropleth Map.properties.choropleth_colormap.properties.max_classes.description: "Maximum number of colour classes for the choropleth (Natural Breaks). Automatically reduced if fewer unique values exist in the data."
+
+    Choropleth Map.properties.choropleth_colormap.properties.colormap_min.default: 0.15
+    Choropleth Map.properties.choropleth_colormap.properties.colormap_max.default: 0.72
+    Choropleth Map.properties.choropleth_colormap.properties.colormap.default: Blues
+    Choropleth Map.properties.choropleth_colormap.properties.colormap.oneOf:
+      - const: Blues
+        title: Blues
+      - const: Greens
+        title: Greens
+      - const: Oranges
+        title: Oranges
+      - const: Purples
+        title: Purples
+      - const: Reds
+        title: Reds
+      - const: Greys
+        title: Greys
+      - const: YlOrRd
+        title: Yellow-Orange-Red
+      - const: YlOrBr
+        title: Yellow-Orange-Brown
+      - const: YlGnBu
+        title: Yellow-Green-Blue
+      - const: YlGn
+        title: Yellow-Green
+      - const: BuPu
+        title: Blue-Purple
+      - const: BuGn
+        title: Blue-Green
+      - const: GnBu
+        title: Green-Blue
+      - const: OrRd
+        title: Orange-Red
+      - const: PuRd
+        title: Purple-Red
+      - const: PuBu
+        title: Purple-Blue
+      - const: PuBuGn
+        title: Purple-Blue-Green
+      - const: RdPu
+        title: Red-Purple
+      - const: viridis
+        title: Viridis
+      - const: plasma
+        title: Plasma
+      - const: magma
+        title: Magma
+      - const: cividis
+        title: Cividis
+
+requirements:
+  - name: ecoscope-workflows-core
+    version: "0.22.18.*"
+    channel: https://repo.prefix.dev/ecoscope-workflows/
+  - name: ecoscope-workflows-ext-ecoscope
+    version: "0.22.18.*"
+    channel: https://repo.prefix.dev/ecoscope-workflows/
+  - name: ecoscope-workflows-ext-custom
+    version: "0.0.57"
+    channel: https://repo.prefix.dev/ecoscope-workflows-custom/
+  - name: pydeck
+    version: 0.9.2
+    channel: conda-forge
+  - name: ecoscope-workflows-ext-eden
+    version: "*"
+    channel: file:///tmp/ecoscope-workflows-custom/release/artifacts/
+
+task-instance-defaults:
+  skipif:
+    conditions:
+      - any_is_empty_df
+      - any_dependency_skipped
+
 workflow:
-  - name:  # Display name used for the configuration form UI
-    description:  # Description used for the configuration form
-    id:  # Unique task identifier (snake_case)
-    task:  # Function name from task library
+  # --- Setup ---
+
+  - name: Set Workflow Details
+    id: workflow_details
+    task: set_workflow_details
+
+  - name: Data Source
+    id: er_client
+    task: set_er_connection
+
+  - name: Current User
+    id: user_details
+    task: get_current_user
+    partial:
+      client: ${{ workflow.er_client.return }}
+
+  - name: ER Site URL
+    id: er_site_url
+    task: get_er_site_url
+    partial:
+      client: ${{ workflow.er_client.return }}
+
+  - name: Define Base Maps
+    id: base_maps
+    task: set_base_maps_pydeck
+
+  - name: Time Range
+    id: time_range
+    task: set_time_range
+    partial:
+      time_format: "%d %b %Y %H:%M:%S %Z"
+
+  - id: get_timezone
+    task: get_timezone_from_time_range
+    partial:
+      time_range: ${{ workflow.time_range.return }}
+
+  - name: Set Groupers
+    id: groupers
+    task: set_groupers
+
+  # --- Data Fetch ---
+
+  - name: Get Community Engagement Events
+    id: events
+    task: get_events
+    partial:
+      client: ${{ workflow.er_client.return }}
+      time_range: ${{ workflow.time_range.return }}
+      event_columns:
+        - id
+        - time
+        - event_type
+        - location
+        - geometry
+        - event_details
+        - state
+        - serial_number
+      include_details: true
+      raise_on_empty: false
+      include_updates: false
+      include_null_geometry: true
+      include_display_values: true
+      include_related_events: false
+
+  - name: Filter Resolved Events
+    id: resolved_events
+    task: filter_row_values
+    partial:
+      df: ${{ workflow.events.return }}
+      column: state
+      values:
+        - resolved
+
+  - id: events_tz
+    task: convert_values_to_timezone
+    partial:
+      df: ${{ workflow.resolved_events.return }}
+      timezone: ${{ workflow.get_timezone.return }}
+      columns:
+        - time
+
+  - name: Process Event Details
+    id: processed_events
+    task: process_events_details
+    partial:
+      df: ${{ workflow.events_tz.return }}
+      client: ${{ workflow.er_client.return }}
+      map_to_titles: false
+      ordered: true
+
+  # --- Extract Fields ---
+  # Each step chains into the next, building up flat columns from event_details JSON.
+
+  - title: Extract Event Fields
+    type: task-group
+    description: Flatten participant and location fields from the event_details JSON column.
+    tasks:
+      - id: extract_participants_total
+        task: extract_value_from_json_column
+        partial:
+          df: ${{ workflow.processed_events.return }}
+          column_name: event_details
+          field_name_options: [participants_total]
+          output_column_name: participants_total
+          output_type: float
+
+      - id: extract_participants_men
+        task: extract_value_from_json_column
+        partial:
+          df: ${{ workflow.extract_participants_total.return }}
+          column_name: event_details
+          field_name_options: [participants_men]
+          output_column_name: participants_men
+          output_type: float
+
+      - id: extract_participants_women
+        task: extract_value_from_json_column
+        partial:
+          df: ${{ workflow.extract_participants_men.return }}
+          column_name: event_details
+          field_name_options: [participants_women]
+          output_column_name: participants_women
+          output_type: float
+
+      - id: extract_youth_male
+        task: extract_value_from_json_column
+        partial:
+          df: ${{ workflow.extract_participants_women.return }}
+          column_name: event_details
+          field_name_options: [participants_youth_male]
+          output_column_name: participants_youth_male
+          output_type: float
+
+      - id: extract_youth_female
+        task: extract_value_from_json_column
+        partial:
+          df: ${{ workflow.extract_youth_male.return }}
+          column_name: event_details
+          field_name_options: [participants_youth_female]
+          output_column_name: participants_youth_female
+          output_type: float
+
+      - id: extract_location_one
+        task: extract_value_from_json_column
+        partial:
+          df: ${{ workflow.extract_youth_female.return }}
+          column_name: event_details
+          field_name_options: [meeting_location_level_one]
+          output_column_name: meeting_location_level_one
+          output_type: str
+
+  # --- Add Temporal Index + Split by Groupers ---
+  # Temporal index columns are added for each TemporalGrouper; split produces one df per group.
+
+  - name: Add Temporal Index
+    id: events_with_temporal_index
+    task: add_temporal_idx
+    partial:
+      df: ${{ workflow.extract_location_one.return }}
+      time_col: time
+      groupers: ${{ workflow.groupers.return }}
+      cast_to_datetime: true
+      format: mixed
+
+  # Old approach (hardcoded quarter column, replaced by add_temporal_index):
+  # - name: Add Quarter Column
+  #   id: events_with_quarter
+  #   task: add_quarter_column
+  #   partial:
+  #     df: ${{ workflow.extract_location_one.return }}
+  #     time_column: time
+  #     output_column: quarter
+
+  - name: Split by Groupers
+    id: grouped_events
+    task: split_groups
+    partial:
+      df: ${{ workflow.events_with_temporal_index.return }}
+      groupers: ${{ workflow.groupers.return }}
+
+  # --- Stat Cards ---
+
+  - title: Stat Cards
+    type: task-group
+    description: Total meetings, total participants, median participants — per group.
+    tasks:
+      - name: Total Meetings Count
+        id: total_meetings
+        task: dataframe_count
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.grouped_events.return }}
+
+      - name: Total Meetings Widget
+        id: total_meetings_widget
+        task: create_single_value_widget_single_view
+        skipif:
+          conditions:
+            - never
+        partial:
+          title: "Total Meetings"
+          decimal_places: 0
+        map:
+          argnames: [view, data]
+          argvalues: ${{ workflow.total_meetings.return }}
+
+      - name: Total Meetings Merged
+        id: total_meetings_merged
+        task: merge_widget_views
+        skipif:
+          conditions:
+            - never
+        partial:
+          widgets: ${{ workflow.total_meetings_widget.return }}
+
+      - name: Total Participants Sum
+        id: total_participants
+        task: dataframe_column_sum
+        partial:
+          column_name: participants_total
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.grouped_events.return }}
+
+      - name: Total Participants Widget
+        id: total_participants_widget
+        task: create_single_value_widget_single_view
+        skipif:
+          conditions:
+            - never
+        partial:
+          title: "Total Participants"
+          decimal_places: 0
+        map:
+          argnames: [view, data]
+          argvalues: ${{ workflow.total_participants.return }}
+
+      - name: Total Participants Merged
+        id: total_participants_merged
+        task: merge_widget_views
+        skipif:
+          conditions:
+            - never
+        partial:
+          widgets: ${{ workflow.total_participants_widget.return }}
+
+      - name: Median Participants per Meeting
+        id: median_participants
+        task: compute_median
+        partial:
+          column: participants_total
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.grouped_events.return }}
+
+      - name: Median Participants Widget
+        id: median_participants_widget
+        task: create_single_value_widget_single_view
+        skipif:
+          conditions:
+            - never
+        partial:
+          title: "Median Participants / Meeting"
+          decimal_places: 1
+        map:
+          argnames: [view, data]
+          argvalues: ${{ workflow.median_participants.return }}
+
+      - name: Median Participants Merged
+        id: median_participants_merged
+        task: merge_widget_views
+        skipif:
+          conditions:
+            - never
+        partial:
+          widgets: ${{ workflow.median_participants_widget.return }}
+
+  # --- Box Plot ---
+
+  - title: Box Plot
+    type: task-group
+    description: Distribution of participants per meeting — per group.
+    tasks:
+      - name: Draw Participants Box Plot
+        id: box_plot
+        task: draw_boxplot
+        partial:
+          y_column: participants_total
+          x_column: null
+          color_column: null
+          sort_by: null
+          sort_ascending: true
+          show_points: outliers
+          orientation: "v"
+          boxmode: "overlay"
+          boxmean: false
+          notched: false
+          reference_line: null
+          colormap: "Paired"
+          plot_style: null
+          layout_style:
+            title: null
+            yaxis:
+              title: "Participants"
+            plot_bgcolor: "white"
+        mapvalues:
+          argnames: dataframe
+          argvalues: ${{ workflow.grouped_events.return }}
+
+      - name: Persist Box Plot
+        id: box_plot_html
+        task: persist_text
+        partial:
+          root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          filename_suffix: box_plot
+        mapvalues:
+          argnames: text
+          argvalues: ${{ workflow.box_plot.return }}
+
+      - name: Box Plot Widget
+        id: box_plot_widget
+        task: create_plot_widget_single_view
+        skipif:
+          conditions:
+            - never
+        partial:
+          title: "Participants per Meeting Distribution"
+        map:
+          argnames: [view, data]
+          argvalues: ${{ workflow.box_plot_html.return }}
+
+      - name: Box Plot Merged
+        id: box_plot_merged
+        task: merge_widget_views
+        skipif:
+          conditions:
+            - never
+        partial:
+          widgets: ${{ workflow.box_plot_widget.return }}
+
+  # --- Gender Breakdown ---
+
+  - title: Gender Breakdown
+    type: task-group
+    description: Breakdown of participants by gender category — per group.
+    tasks:
+      - name: Prepare Gender Breakdown
+        id: gender_breakdown
+        task: prepare_gender_breakdown
+        partial:
+          men_column: participants_men
+          women_column: participants_women
+          youth_men_column: participants_youth_male
+          youth_women_column: participants_youth_female
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.grouped_events.return }}
+
+      - name: Apply Gender Colors
+        id: gender_colormap
+        task: apply_color_map
+        partial:
+          input_column_name: category
+          output_column_name: gender_color
+          colormap: Paired
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.gender_breakdown.return }}
+
+      - name: Draw Gender Pie Chart
+        id: gender_pie_chart
+        task: draw_pie_chart
+        partial:
+          value_column: count
+          label_column: category
+          color_column: gender_color
+          plot_style:
+            textinfo: "label+percent"
+          layout_style:
+            title: null
+        mapvalues:
+          argnames: dataframe
+          argvalues: ${{ workflow.gender_colormap.return }}
+
+      - name: Persist Gender Pie Chart
+        id: gender_pie_chart_html
+        task: persist_text
+        partial:
+          root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          filename_suffix: gender_pie_chart
+        mapvalues:
+          argnames: text
+          argvalues: ${{ workflow.gender_pie_chart.return }}
+
+      - name: Gender Pie Chart Widget
+        id: gender_pie_chart_widget
+        task: create_plot_widget_single_view
+        skipif:
+          conditions:
+            - never
+        partial:
+          title: "Men / Women / Youth Men / Youth Women"
+        map:
+          argnames: [view, data]
+          argvalues: ${{ workflow.gender_pie_chart_html.return }}
+
+      - name: Gender Pie Chart Merged
+        id: gender_pie_chart_merged
+        task: merge_widget_views
+        skipif:
+          conditions:
+            - never
+        partial:
+          widgets: ${{ workflow.gender_pie_chart_widget.return }}
+
+  # --- Topic Bar Chart ---
+
+  - title: Topic Bar Chart
+    type: task-group
+    description: Topics covered per location as a stacked bar chart — per group.
+    tasks:
+      - name: Draw Topic Bar Chart
+        id: topic_bar_chart
+        task: draw_topic_bar_chart
+        partial:
+          event_details_column: event_details
+          location_column: meeting_location_level_one
+          topic_key: topics
+          topic_field: topic
+          title: null
+          x_axis_title: "Location"
+          y_axis_title: "Frequency"
+          colormap: Paired
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.grouped_events.return }}
+
+      - name: Persist Topic Bar Chart
+        id: topic_bar_chart_html
+        task: persist_text
+        partial:
+          root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          filename_suffix: topic_bar_chart
+        mapvalues:
+          argnames: text
+          argvalues: ${{ workflow.topic_bar_chart.return }}
+
+      - name: Topic Bar Chart Widget
+        id: topic_bar_chart_widget
+        task: create_plot_widget_single_view
+        skipif:
+          conditions:
+            - never
+        partial:
+          title: "Topics Covered by Location"
+        map:
+          argnames: [view, data]
+          argvalues: ${{ workflow.topic_bar_chart_html.return }}
+
+      - name: Topic Bar Chart Merged
+        id: topic_bar_chart_merged
+        task: merge_widget_views
+        skipif:
+          conditions:
+            - never
+        partial:
+          widgets: ${{ workflow.topic_bar_chart_widget.return }}
+
+  # --- Topic × Location Summary Table ---
+
+  - title: Topic Location Table
+    type: task-group
+    description: Frequency of topics discussed broken down by location — per group.
+    tasks:
+      - name: Build Topic Location Pivot
+        id: topic_location_pivot
+        task: build_topic_location_table
+        partial:
+          event_details_column: event_details
+          location_column: meeting_location_level_one
+          topic_key: topics
+          topic_field: topic
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.grouped_events.return }}
+
+      # - name: Draw Topic Location Table
+      #   id: topic_location_table
+      #   task: draw_table
+      #   mapvalues:
+      #     argnames: dataframe
+      #     argvalues: ${{ workflow.topic_location_pivot.return }}
+      #
+      # - name: Persist Topic Location Table
+      #   id: topic_location_table_html
+      #   task: persist_text
+      #   partial:
+      #     root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+      #     filename_suffix: topic_location_table
+      #   mapvalues:
+      #     argnames: text
+      #     argvalues: ${{ workflow.topic_location_table.return }}
+      #
+      # - name: Topic Location Table Widget
+      #   id: topic_location_table_widget
+      #   task: create_plot_widget_single_view
+      #   skipif:
+      #     conditions:
+      #       - never
+      #   partial:
+      #     title: "Topics by Location"
+      #   map:
+      #     argnames: [view, data]
+      #     argvalues: ${{ workflow.topic_location_table_html.return }}
+      #
+      # - name: Topic Location Table Merged
+      #   id: topic_location_table_merged
+      #   task: merge_widget_views
+      #   skipif:
+      #     conditions:
+      #       - never
+      #   partial:
+      #     widgets: ${{ workflow.topic_location_table_widget.return }}
+
+  # --- Choropleth Map ---
+
+  - title: Choropleth Map
+    type: task-group
+    description: Number of meetings per location polygon (e.g. adjudication areas, chiefdoms, forest clusters).
+    tasks:
+      - name: Load Adjudication Polygons
+        id: adjudication_polygons
+        task: load_adjudication_polygons
+
+      - name: Choropleth Groupers
+        id: choropleth_groupers
+        task: exclude_groupers
+        partial:
+          groupers: ${{ workflow.groupers.return }}
+          exclude:
+            - meeting_location_level_one
+
+      - name: Split Choropleth Events
+        id: choropleth_events
+        task: split_groups
+        partial:
+          df: ${{ workflow.events_with_temporal_index.return }}
+          groupers: ${{ workflow.choropleth_groupers.return }}
+
+      - name: Join Meeting Counts to Polygons
+        id: choropleth_joined
+        task: join_meeting_counts_to_polygons
+        partial:
+          polygons: ${{ workflow.adjudication_polygons.return }}
+          polygon_name_column: Name
+          event_location_column: meeting_location_level_one
+          count_column: meeting_count
+        mapvalues:
+          argnames: events
+          argvalues: ${{ workflow.choropleth_events.return }}
+
+      - name: Apply Choropleth Colormap
+        id: choropleth_colormap
+        task: apply_choropleth_colormap
+        partial:
+          count_column: meeting_count
+          fill_color_column: fill_color
+          label_column: choropleth_label
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.choropleth_joined.return }}
+
+      - name: Prepare Meeting Count Labels
+        id: choropleth_count_labels
+        task: prepare_count_labels
+        partial:
+          count_column: meeting_count
+          label_column: label
+          suffix: " meetings"
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.choropleth_colormap.return }}
+
+      - name: Prepare Polygon Name Labels
+        id: choropleth_name_labels
+        task: prepare_polygon_labels
+        partial:
+          name_column: Name
+          label_column: label
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.choropleth_colormap.return }}
+
+      - name: Prepare Missing Location Events
+        id: missing_location_events
+        task: prepare_missing_location_events
+        partial:
+          polygons: ${{ workflow.adjudication_polygons.return }}
+          polygon_name_column: Name
+          event_location_column: meeting_location_level_one
+          label_column: label
+        mapvalues:
+          argnames: events
+          argvalues: ${{ workflow.choropleth_events.return }}
+
+      - name: Create Choropleth Polygon Layer
+        id: choropleth_layer
+        task: create_polygon_layer_pydeck
+        partial:
+          data_url: null
+          layer_style:
+            get_fill_color: fill_color
+            get_line_color: [0, 0, 0, 200]
+            line_width_min_pixels: 1
+            stroked: true
+            opacity: 0.7
+          legend:
+            label_column: choropleth_label
+            color_column: fill_color
+            title: "Meetings"
+        mapvalues:
+          argnames: geodataframe
+          argvalues: ${{ workflow.choropleth_colormap.return }}
+
+      - name: Slim Event Points for Scatter
+        id: choropleth_event_points
+        task: select_columns
+        partial:
+          columns:
+            - serial_number
+            - state
+            - geometry
+          raise_on_missing: false
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.choropleth_events.return }}
+
+      - name: Create Event Locations Scatter Layer
+        id: events_scatter_layer
+        task: create_scatterplot_layer
+        partial:
+          data_url: null
+          layer_style:
+            get_fill_color: [255, 140, 0, 200]
+            radius_min_pixels: 5
+            radius_max_pixels: 8
+            opacity: 0.8
+            stroked: true
+            get_line_color: [255, 255, 255, 180]
+            line_width_min_pixels: 1
+          legend: null
+        mapvalues:
+          argnames: geodataframe
+          argvalues: ${{ workflow.choropleth_event_points.return }}
+
+      - name: Create Polygon Name Label Layer
+        id: choropleth_name_layer
+        task: create_text_layer_pydeck
+        partial:
+          data_url: null
+          legend: null
+          layer_style:
+            get_text: label
+            get_size: 10
+            get_color: [40, 40, 40, 230]
+            background: false
+            get_pixel_offset: [0, -10]
+        mapvalues:
+          argnames: geodataframe
+          argvalues: ${{ workflow.choropleth_name_labels.return }}
+
+      - name: Create Meeting Count Label Layer
+        id: choropleth_count_layer
+        task: create_text_layer_pydeck
+        partial:
+          data_url: null
+          legend: null
+          layer_style:
+            get_text: label
+            get_size: 10
+            get_color: [40, 40, 40, 230]
+            background: false
+            get_pixel_offset: [0, 10]
+        mapvalues:
+          argnames: geodataframe
+          argvalues: ${{ workflow.choropleth_count_labels.return }}
+
+      - name: Create Missing Location Scatter Layer
+        id: missing_scatter_layer
+        task: create_scatterplot_layer
+        partial:
+          data_url: null
+          layer_style:
+            get_fill_color: [210, 30, 30, 220]
+            radius_min_pixels: 6
+            radius_max_pixels: 10
+            opacity: 0.9
+            stroked: true
+            get_line_color: [255, 255, 255, 200]
+            line_width_min_pixels: 1
+          legend: null
+        mapvalues:
+          argnames: geodataframe
+          argvalues: ${{ workflow.missing_location_events.return }}
+
+      - name: Create Missing Location Label Layer
+        id: missing_label_layer
+        task: create_text_layer_pydeck
+        partial:
+          data_url: null
+          legend: null
+          layer_style:
+            get_text: label
+            get_size: 11
+            get_color: [170, 0, 0, 240]
+            background: false
+            get_pixel_offset: [0, -14]
+        mapvalues:
+          argnames: geodataframe
+          argvalues: ${{ workflow.missing_location_events.return }}
+
+      - name: Combine All Choropleth Layers
+        id: choropleth_geo_layers
+        task: groupbykey
+        partial:
+          iterables:
+            - ${{ workflow.choropleth_layer.return }}
+            - ${{ workflow.events_scatter_layer.return }}
+            - ${{ workflow.choropleth_name_layer.return }}
+            - ${{ workflow.choropleth_count_layer.return }}
+            - ${{ workflow.missing_scatter_layer.return }}
+            - ${{ workflow.missing_label_layer.return }}
+
+      - name: Choropleth View State
+        id: choropleth_view_state
+        task: create_viewstate_gdf
+        partial:
+          gdf: ${{ workflow.adjudication_polygons.return }}
+          padding: 0.2
+          viewport_width: 1280
+          viewport_height: 720
+
+      - name: Draw Choropleth Map
+        id: choropleth_map
+        task: draw_map
+        partial:
+          static: false
+          title: null
+          tile_layers: ${{ workflow.base_maps.return }}
+          max_zoom: 20
+          view_state: ${{ workflow.choropleth_view_state.return }}
+          legend_style:
+            placement: bottom-right
+        mapvalues:
+          argnames: geo_layers
+          argvalues: ${{ workflow.choropleth_geo_layers.return }}
+
+      - name: Persist Choropleth Map
+        id: choropleth_map_html
+        task: persist_text
+        partial:
+          root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          filename_suffix: choropleth_map
+        mapvalues:
+          argnames: text
+          argvalues: ${{ workflow.choropleth_map.return }}
+
+      - name: Expand Choropleth to All Group Keys
+        id: choropleth_map_html_expanded
+        task: expand_to_composite_keys
+        skipif:
+          conditions:
+            - any_is_empty_df
+        partial:
+          keyed_values: ${{ workflow.choropleth_map_html.return }}
+          reference: ${{ workflow.grouped_events.return }}
+
+      - name: Choropleth Map Widget
+        id: choropleth_map_widget
+        task: create_map_widget_single_view
+        skipif:
+          conditions:
+            - never
+        partial:
+          title: "Meetings per Adjudication"
+        map:
+          argnames: [view, data]
+          argvalues: ${{ workflow.choropleth_map_html_expanded.return }}
+
+      - name: Choropleth Map Merged
+        id: choropleth_map_merged
+        task: merge_widget_views
+        skipif:
+          conditions:
+            - never
+        partial:
+          widgets: ${{ workflow.choropleth_map_widget.return }}
+
+  # --- DOCX Report ---
+
+  - title: DOCX Report
+    type: task-group
+    description: Per-group community engagement report (one .docx per grouper combination).
+    tasks:
+      - name: Box Plot PNG
+        id: box_plot_png
+        task: html_to_png
+        partial:
+          output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          config:
+            full_page: false
+        mapvalues:
+          argnames: html_path
+          argvalues: ${{ workflow.box_plot_html.return }}
+
+      - name: Pie Chart PNG
+        id: pie_chart_png
+        task: html_to_png
+        partial:
+          output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          config:
+            full_page: false
+        mapvalues:
+          argnames: html_path
+          argvalues: ${{ workflow.gender_pie_chart_html.return }}
+
+      - name: Choropleth PNG
+        id: choropleth_png
+        task: html_to_png
+        partial:
+          output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          config:
+            full_page: false
+        mapvalues:
+          argnames: html_path
+          argvalues: ${{ workflow.choropleth_map_html_expanded.return }}
+
+      - name: Bundle Report Inputs
+        id: report_inputs
+        task: groupbykey
+        partial:
+          iterables:
+            - ${{ workflow.grouped_events.return }}
+            - ${{ workflow.box_plot_png.return }}
+            - ${{ workflow.pie_chart_png.return }}
+            - ${{ workflow.choropleth_png.return }}
+            - ${{ workflow.topic_location_pivot.return }}
+
+      - name: Generate Community Report
+        id: generate_report
+        task: generate_community_report
+        skipif:
+          conditions:
+            - never
+        partial:
+          output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          user_details: ${{ workflow.user_details.return }}
+          time_range: ${{ workflow.time_range.return }}
+          site_url: ${{ workflow.er_site_url.return }}
+          location: Community Area
+          quarter_column: quarter
+          participants_column: participants_total
+          location_column: meeting_location_level_one
+          workflow_title: Community Engagement Report
+          workflow_subtitle: Wildlife Dynamics
+        mapvalues:
+          argnames: report_data
+          argvalues: ${{ workflow.report_inputs.return }}
+
+  # --- Dashboard ---
+
+  - name: Create Dashboard
+    id: dashboard
+    task: gather_dashboard
+    partial:
+      details: ${{ workflow.workflow_details.return }}
+      widgets:
+        - ${{ workflow.total_meetings_merged.return }}
+        - ${{ workflow.total_participants_merged.return }}
+        - ${{ workflow.median_participants_merged.return }}
+        - ${{ workflow.box_plot_merged.return }}
+        - ${{ workflow.gender_pie_chart_merged.return }}
+        - ${{ workflow.topic_bar_chart_merged.return }}
+        - ${{ workflow.choropleth_map_merged.return }}
+      time_range: ${{ workflow.time_range.return }}
+      groupers: ${{ workflow.groupers.return }}

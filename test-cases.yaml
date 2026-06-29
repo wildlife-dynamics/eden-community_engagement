@@ -1,0 +1,27 @@
+olokeri:
+  name: Olokeri
+  description: Community engagement report for Olokeri.
+  mock_io: false
+  params:
+    workflow_details:
+      name: "Community Engagement"
+      description: ""
+    er_client:
+      data_source:
+        name: "olokeri"
+    time_range:
+      timezone:
+        label: Africa/Nairobi
+        tzCode: EAT
+        name: Nairobi
+        utc: +03:00
+      since: "2000-01-01T00:00:00.000Z"
+      until: "2026-12-31T23:59:59.000Z"
+    groupers:
+      groupers:
+        - temporal_index: "__quarter__"
+    events:
+      event_types:
+        - "community_meeting_new"
+    generate_report:
+      template_path: "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
