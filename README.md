@@ -1,16 +1,30 @@
 # Community Engagement Workflow
 
-Generates per-period community engagement reports from EarthRanger event data. For each grouper combination (e.g. quarter), the workflow produces a `.docx` report with meeting statistics, participant breakdowns, and a choropleth map.
+Pulls community meeting events from EarthRanger and generates `.docx` reports with meeting statistics, participant breakdowns, and a choropleth map of meeting locations.
+
+Reports are produced per grouper combination — by quarter, month, location, or any combination. If no groupers are set, a single report covering the full time range is produced.
 
 ## Outputs
 
-- **DOCX reports** — one per group (e.g. `Community_Report_2026_Q1_Olokeri.docx`)
-- **Charts** — box plot, gender pie chart, topic bar chart, choropleth map
+- `Community_Report_{period}_{location}.docx` — one per group
+- Supporting charts: box plot, gender pie chart, topics bar chart, choropleth map
 
-## Quickstart
+## Configuration
+
+Edit `param.yaml` before running:
+
+- **`er_client`** — EarthRanger data source name
+- **`time_range`** — `since` / `until` in ISO 8601
+- **`groupers`** — how to slice the data (quarter, month, location, etc.) — optional
+- **`events.event_types`** — EarthRanger event type(s) to fetch
+- **`generate_report.template_path`** — path to the `.docx` Jinja2 template; accepts a local path or HTTPS URL
+
+The default template is at `resources/templates/community_engagement_report_template.docx`.
+
+## Compile & run
 
 ```bash
-# Compile
+# Recompile after editing spec.yaml
 bash dev/recompile.sh --install
 
 # Run
@@ -20,13 +34,7 @@ ECOSCOPE_WORKFLOWS_RESULTS="file:///tmp/output" \
   --config-file param.yaml --execution-mode sequential --no-mock-io
 ```
 
-## Configuration
-
-Edit `param.yaml` to set the EarthRanger data source, time range, event types, groupers, and report template path.
-
-The report template (`resources/templates/community_engagement_report_template.docx`) is a Jinja2 DOCX template — the `template_path` parameter accepts a local path or HTTPS URL.
-
 ## Requirements
 
 - [pixi](https://pixi.sh)
-- EarthRanger connection configured via `ecoscope-workflows` connections
+- EarthRanger connection configured via `ecoscope-workflows connections`
