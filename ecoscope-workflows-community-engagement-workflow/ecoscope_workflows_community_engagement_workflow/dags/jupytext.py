@@ -1655,7 +1655,7 @@ choropleth_joined = (
 
 
 # %% [markdown]
-# ## Apply Choropleth Colormap
+# ##
 
 # %%
 # parameters
@@ -2424,7 +2424,7 @@ report_inputs = (
 
 
 # %% [markdown]
-# ## Generate Community Report
+# ##
 
 # %%
 # parameters

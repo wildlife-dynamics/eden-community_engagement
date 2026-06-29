@@ -456,11 +456,11 @@
           },
           "required": [],
           "type": "object",
-          "title": "Apply Choropleth Colormap"
+          "title": ""
         }
       }
     },
-    "DOCX Report": {
+    "Community Report": {
       "type": "object",
       "description": "Per-group community engagement report (one .docx per grouper combination).",
       "ecoscope:task_group": true,
@@ -479,7 +479,7 @@
             "template_path"
           ],
           "type": "object",
-          "title": "Generate Community Report"
+          "title": ""
         }
       }
     }
@@ -646,7 +646,7 @@
       "groupers",
       "events",
       "Choropleth Map",
-      "DOCX Report"
+      "Community Report"
     ],
     "groupers": {
       "groupers": {

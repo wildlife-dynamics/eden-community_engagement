@@ -302,9 +302,5 @@ class Params(BaseModel):
     )
     groupers: Optional[Groupers] = Field(None, title="Set Groupers")
     events: Optional[Events] = Field(None, title="Get Community Engagement Events")
-    choropleth_colormap: Optional[ChoroplethColormap] = Field(
-        None, title="Apply Choropleth Colormap"
-    )
-    generate_report: Optional[GenerateReport] = Field(
-        None, title="Generate Community Report"
-    )
+    choropleth_colormap: Optional[ChoroplethColormap] = Field(None, title="")
+    generate_report: Optional[GenerateReport] = Field(None, title="")

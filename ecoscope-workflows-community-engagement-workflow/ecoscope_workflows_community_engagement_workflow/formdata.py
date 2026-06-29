@@ -218,9 +218,7 @@ class ChoroplethColormap(BaseModel):
 
 
 class ChoroplethMap(BaseModel):
-    choropleth_colormap: Optional[ChoroplethColormap] = Field(
-        None, title="Apply Choropleth Colormap"
-    )
+    choropleth_colormap: Optional[ChoroplethColormap] = Field(None, title="")
 
 
 class GenerateReport(BaseModel):
@@ -234,10 +232,8 @@ class GenerateReport(BaseModel):
     )
 
 
-class DOCXReport(BaseModel):
-    generate_report: Optional[GenerateReport] = Field(
-        None, title="Generate Community Report"
-    )
+class CommunityReport(BaseModel):
+    generate_report: Optional[GenerateReport] = Field(None, title="")
 
 
 class EarthRangerConnection(BaseModel):
@@ -313,8 +309,8 @@ class FormData(BaseModel):
         alias="Choropleth Map",
         description="Number of meetings per location polygon (e.g. adjudication areas, chiefdoms, forest clusters).",
     )
-    DOCX_Report: Optional[DOCXReport] = Field(
+    Community_Report: Optional[CommunityReport] = Field(
         None,
-        alias="DOCX Report",
+        alias="Community Report",
         description="Per-group community engagement report (one .docx per grouper combination).",
     )
