@@ -1,19 +1,21 @@
 # Community Engagement Workflow
 
-An [ecoscope-workflows](https://github.com/wildlife-dynamics/ecoscope-workflows) workflow that turns your EarthRanger community meeting data into ready-to-share reports and a live dashboard — with no manual data wrangling.
+Community engagement is central to conservation success. Protected area managers and rangers hold regular meetings with local communities — to share information, resolve conflicts, gather intelligence, and build trust. Tracking these interactions consistently, and understanding patterns over time, is essential for adaptive management and donor reporting.
+
+This workflow automates that process. It connects to your EarthRanger site, pulls your community meeting records, and produces structured reports and a dashboard that give you a clear picture of how engagement is progressing — who you're reaching, how participation is trending, which topics are coming up, and where meetings are concentrated across the landscape.
 
 ---
 
 ## What you get
 
-Point this workflow at your EarthRanger site and it will fetch all your resolved community meeting events for the period you choose. It processes the raw event data — pulling out participant counts, gender breakdowns, meeting topics, and locations — then groups everything however you like: by quarter, by month, by location, or any combination.
+Point this workflow at your EarthRanger site and configure your time range. It fetches all resolved community meeting events, processes the event details — participant counts, gender breakdown, topics discussed, meeting location — and groups them however makes sense for your reporting cycle: by quarter, by month, by location area, or any combination.
 
-For each group, you get:
+For each group you get:
 
-- A **Word report** (`.docx`) with a summary table (total meetings, total participants, median participants per meeting with IQR), a box plot of participant distribution, a gender pie chart, a topics bar chart, and a choropleth map showing meeting frequency across geographic areas such as adjudication areas, chiefdoms, or forest clusters.
-- A **dashboard** that brings all the charts and stat cards together across groups — useful for a quick overview without opening individual reports.
+- A **Word report** with a summary table (total meetings, total participants, median participants per meeting), a participant distribution box plot, a gender breakdown pie chart, a topics bar chart showing what communities are raising, and a choropleth map of meeting frequency across your adjudication areas, chiefdoms, or forest clusters.
+- A **dashboard** that consolidates all the stats and charts across groups for a quick programme-level overview.
 
-If you don't configure any groupers, the workflow treats all your data as one group and produces a single report and dashboard.
+If you don't apply any groupers, you get a single report covering the full period — useful for annual or project-end summaries.
 
 ---
 
@@ -26,7 +28,7 @@ Everything is written to `ECOSCOPE_WORKFLOWS_RESULTS`:
 | `Community_Report_{period}_{location}.docx` | Word report — one per group |
 | `*_box_plot.png` | Distribution of participants per meeting |
 | `*_gender_pie_chart.png` | Participant breakdown by gender |
-| `*_choropleth_map.png` | Meeting frequency by geographic area |
+| `*_choropleth_map.png` | Meeting frequency across geographic areas |
 | Dashboard | Stat cards + all charts merged across groups |
 
 ---
@@ -62,7 +64,7 @@ generate_report:
   template_path: "/path/to/template.docx"    # local path or HTTPS URL
 ```
 
-The report template at `resources/templates/community_engagement_report_template.docx` is a Jinja2-powered Word template. You can reference it by local path or host it somewhere and pass an HTTPS URL — the workflow handles the download automatically.
+The report template at `resources/templates/community_engagement_report_template.docx` is a Jinja2-powered Word template. You can reference it by local path or host it and pass an HTTPS URL — the workflow downloads it automatically.
 
 ---
 
