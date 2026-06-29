@@ -1,39 +1,82 @@
 # Community Engagement Workflow
 
-Pulls community meeting events from EarthRanger and generates a dashboard and `.docx` reports with meeting statistics, participant breakdowns, and a choropleth map of meeting locations.
+An [ecoscope-workflows](https://github.com/wildlife-dynamics/ecoscope-workflows) workflow that connects to EarthRanger, pulls community meeting events, and produces a dashboard and per-group `.docx` reports.
 
-Reports and dashboard widgets are produced per grouper combination — by quarter, month, location, or any combination. If no groupers are set, a single report covering the full time range is produced.
+---
+
+## What it does
+
+The workflow fetches resolved community meeting events for a configured time range, processes the event details (participants, gender breakdown, meeting topics, location), then groups and analyses the data. For each group it renders a box plot, gender pie chart, topics bar chart, and choropleth map — and assembles these into a Word report and a dashboard.
+
+Groupers determine how many reports are produced. With a quarterly grouper, you get one report per quarter. With a location grouper, one per location. Groupers can be combined, or omitted entirely to produce a single report covering the full time range.
+
+---
 
 ## Outputs
 
-- `Community_Report_{period}_{location}.docx` — one per group
-- **Dashboard** — stat cards (total meetings, participants, median), box plot, gender pie chart, topics bar chart, choropleth map
-- Supporting chart images: box plot, gender pie chart, topics bar chart, choropleth map
+Written to `ECOSCOPE_WORKFLOWS_RESULTS`:
+
+| File | Description |
+|------|-------------|
+| `Community_Report_{period}_{location}.docx` | Word report — one per group |
+| `*_box_plot.png` | Distribution of participants per meeting |
+| `*_gender_pie_chart.png` | Participant breakdown by gender |
+| `*_choropleth_map.png` | Meeting frequency by geographic area |
+| Dashboard | Stat cards + all charts merged across groups |
+
+---
 
 ## Configuration
 
 Edit `param.yaml` before running:
 
-- **`er_client`** — EarthRanger data source name
-- **`time_range`** — `since` / `until` in ISO 8601
-- **`groupers`** — how to slice the data (quarter, month, location, etc.) — optional
-- **`events.event_types`** — EarthRanger event type(s) to fetch
-- **`generate_report.template_path`** — path to the `.docx` Jinja2 template; accepts a local path or HTTPS URL
+```yaml
+er_client:
+  data_source:
+    name: "olokeri"             # EarthRanger connection name
 
-The default template is at `resources/templates/community_engagement_report_template.docx`.
+time_range:
+  timezone:
+    label: Africa/Nairobi
+    tzCode: EAT
+    name: Nairobi
+    utc: +03:00
+  since: "2000-01-01T00:00:00.000Z"
+  until: "2026-12-31T23:59:59.000Z"
+
+groupers:
+  groupers:
+    - temporal_index: "__quarter__"         # quarter | __semester__ | %Y | %Y-%m
+  # - index_name: meeting_location_level_one  # or group by location
+
+events:
+  event_types:
+    - "community_meeting_new"
+
+generate_report:
+  template_path: "/path/to/template.docx"  # local path or HTTPS URL
+```
+
+The default report template lives at `resources/templates/community_engagement_report_template.docx`. It is a Jinja2-powered Word template and can be referenced by local path or public HTTPS URL.
+
+---
 
 ## Compile & run
 
 ```bash
-# Recompile after editing spec.yaml
+# Recompile after changes to spec.yaml
 bash dev/recompile.sh --install
 
 # Run
 ECOSCOPE_WORKFLOWS_RESULTS="file:///tmp/output" \
   pixi run --manifest-path ecoscope-workflows-community-engagement-workflow/pixi.toml \
   ecoscope-workflows-community-engagement-workflow run \
-  --config-file param.yaml --execution-mode sequential --no-mock-io
+  --config-file param.yaml \
+  --execution-mode sequential \
+  --no-mock-io
 ```
+
+---
 
 ## Requirements
 
