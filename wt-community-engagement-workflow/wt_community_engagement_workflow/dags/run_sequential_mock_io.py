@@ -7,89 +7,85 @@ Lines specific to the testing context are marked with a test tube emoji (🧪) t
 that they would not be included (or would be different) in the production version of this file.
 """
 
-import json
 import os
 import warnings  # 🧪
+from typing import Any
 
-from ecoscope_workflows_core.tasks.config import (
-    set_workflow_details as set_workflow_details,
-)
-from ecoscope_workflows_core.tasks.filter import (
+from ecoscope.platform.tasks.config import set_workflow_details as set_workflow_details
+from ecoscope.platform.tasks.filter import (
     get_timezone_from_time_range as get_timezone_from_time_range,
 )
-from ecoscope_workflows_core.tasks.filter import set_time_range as set_time_range
-from ecoscope_workflows_core.tasks.groupby import set_groupers as set_groupers
-from ecoscope_workflows_core.tasks.io import set_er_connection as set_er_connection
-from ecoscope_workflows_core.tasks.skip import (
+from ecoscope.platform.tasks.filter import set_time_range as set_time_range
+from ecoscope.platform.tasks.groupby import set_groupers as set_groupers
+from ecoscope.platform.tasks.io import set_er_connection as set_er_connection
+from ecoscope.platform.tasks.skip import (
     any_dependency_skipped as any_dependency_skipped,
 )
-from ecoscope_workflows_core.tasks.skip import any_is_empty_df as any_is_empty_df
-from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
+from ecoscope.platform.tasks.skip import any_is_empty_df as any_is_empty_df
 from ecoscope_workflows_ext_custom.tasks.io import get_current_user as get_current_user
 from ecoscope_workflows_ext_custom.tasks.results import (
     set_base_maps_pydeck as set_base_maps_pydeck,
 )
 from ecoscope_workflows_ext_eden.tasks import get_er_site_url as get_er_site_url
+from wt_contracts import validate as _validate
+from wt_task import task
+from wt_task.testing import create_func_magicmock  # 🧪
 
-get_events = create_task_magicmock(  # 🧪
-    anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
+from .. import metadata as _metadata
+
+get_events = create_func_magicmock(  # 🧪
+    anchor="ecoscope.platform.tasks.io",  # 🧪
     func_name="get_events",  # 🧪
 )  # 🧪
-from ecoscope_workflows_core.tasks.transformation import (
+from ecoscope.platform.tasks.transformation import (
     convert_values_to_timezone as convert_values_to_timezone,
 )
 from ecoscope_workflows_ext_custom.tasks.transformation import (
     filter_row_values as filter_row_values,
 )
 
-process_events_details = create_task_magicmock(  # 🧪
+process_events_details = create_func_magicmock(  # 🧪
     anchor="ecoscope_workflows_ext_custom.tasks.io",  # 🧪
     func_name="process_events_details",  # 🧪
 )  # 🧪
-from ecoscope_workflows_core.tasks.analysis import (
+from ecoscope.platform.tasks.analysis import (
     dataframe_column_sum as dataframe_column_sum,
 )
-from ecoscope_workflows_core.tasks.analysis import dataframe_count as dataframe_count
-from ecoscope_workflows_core.tasks.groupby import groupbykey as groupbykey
-from ecoscope_workflows_core.tasks.groupby import split_groups as split_groups
-from ecoscope_workflows_core.tasks.io import persist_text as persist_text
-from ecoscope_workflows_core.tasks.results import (
+from ecoscope.platform.tasks.analysis import dataframe_count as dataframe_count
+from ecoscope.platform.tasks.groupby import groupbykey as groupbykey
+from ecoscope.platform.tasks.groupby import split_groups as split_groups
+from ecoscope.platform.tasks.io import persist_text as persist_text
+from ecoscope.platform.tasks.results import (
     create_map_widget_single_view as create_map_widget_single_view,
 )
-from ecoscope_workflows_core.tasks.results import (
+from ecoscope.platform.tasks.results import (
     create_plot_widget_single_view as create_plot_widget_single_view,
 )
-from ecoscope_workflows_core.tasks.results import (
+from ecoscope.platform.tasks.results import (
     create_single_value_widget_single_view as create_single_value_widget_single_view,
 )
-from ecoscope_workflows_core.tasks.results import gather_dashboard as gather_dashboard
-from ecoscope_workflows_core.tasks.results import (
-    merge_widget_views as merge_widget_views,
-)
-from ecoscope_workflows_core.tasks.skip import never as never
-from ecoscope_workflows_core.tasks.transformation import (
+from ecoscope.platform.tasks.results import draw_pie_chart as draw_pie_chart
+from ecoscope.platform.tasks.results import gather_dashboard as gather_dashboard
+from ecoscope.platform.tasks.results import merge_widget_views as merge_widget_views
+from ecoscope.platform.tasks.skip import never as never
+from ecoscope.platform.tasks.transformation import apply_color_map as apply_color_map
+from ecoscope.platform.tasks.transformation import (
     extract_value_from_json_column as extract_value_from_json_column,
 )
 from ecoscope_workflows_ext_custom.tasks.io import html_to_png as html_to_png
 from ecoscope_workflows_ext_custom.tasks.results import (
-    create_polygon_layer_pydeck as create_polygon_layer_pydeck,
+    create_polygon_layer_pydeck as create_polygon_layer_pydeck_1,
 )
 from ecoscope_workflows_ext_custom.tasks.results import (
-    create_scatterplot_layer as create_scatterplot_layer,
+    create_scatterplot_layer as create_scatterplot_layer_1,
 )
 from ecoscope_workflows_ext_custom.tasks.results import (
-    create_text_layer_pydeck as create_text_layer_pydeck,
+    create_text_layer_pydeck as create_text_layer_pydeck_1,
 )
 from ecoscope_workflows_ext_custom.tasks.results import draw_boxplot as draw_boxplot
-from ecoscope_workflows_ext_custom.tasks.results import draw_map as draw_map
+from ecoscope_workflows_ext_custom.tasks.results import draw_map as draw_map_1
 from ecoscope_workflows_ext_custom.tasks.transformation import (
     select_columns as select_columns,
-)
-from ecoscope_workflows_ext_ecoscope.tasks.results import (
-    draw_pie_chart as draw_pie_chart,
-)
-from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
-    apply_color_map as apply_color_map,
 )
 from ecoscope_workflows_ext_eden.tasks import add_temporal_idx as add_temporal_idx
 from ecoscope_workflows_ext_eden.tasks import (
@@ -131,16 +127,16 @@ from ecoscope_workflows_ext_eden.tasks import (
     prepare_polygon_labels as prepare_polygon_labels,
 )
 
-from ..params import Params
 
-
-def main(params: Params):
+def main(params: dict[str, Any], validate_params_schema: bool = True):
     warnings.warn("This test script should not be used in production!")  # 🧪
 
-    params_dict = json.loads(params.model_dump_json(exclude_unset=True))
+    if validate_params_schema:
+        _validate(params, _metadata.load_params_schema())
 
     workflow_details = (
-        set_workflow_details.validate()
+        task(set_workflow_details)
+        .validate()
         .set_task_instance_id("workflow_details")
         .handle_errors()
         .with_tracing()
@@ -151,12 +147,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(**(params_dict.get("workflow_details") or {}))
+        .partial(**(params.get("workflow_details") or {}))
         .call()
     )
 
     er_client = (
-        set_er_connection.validate()
+        task(set_er_connection)
+        .validate()
         .set_task_instance_id("er_client")
         .handle_errors()
         .with_tracing()
@@ -167,12 +164,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(**(params_dict.get("er_client") or {}))
+        .partial(**(params.get("er_client") or {}))
         .call()
     )
 
     user_details = (
-        get_current_user.validate()
+        task(get_current_user)
+        .validate()
         .set_task_instance_id("user_details")
         .handle_errors()
         .with_tracing()
@@ -183,12 +181,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(client=er_client, **(params_dict.get("user_details") or {}))
+        .partial(client=er_client, **(params.get("user_details") or {}))
         .call()
     )
 
     er_site_url = (
-        get_er_site_url.validate()
+        task(get_er_site_url)
+        .validate()
         .set_task_instance_id("er_site_url")
         .handle_errors()
         .with_tracing()
@@ -199,12 +198,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(client=er_client, **(params_dict.get("er_site_url") or {}))
+        .partial(client=er_client, **(params.get("er_site_url") or {}))
         .call()
     )
 
     base_maps = (
-        set_base_maps_pydeck.validate()
+        task(set_base_maps_pydeck)
+        .validate()
         .set_task_instance_id("base_maps")
         .handle_errors()
         .with_tracing()
@@ -215,12 +215,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(**(params_dict.get("base_maps") or {}))
+        .partial(**(params.get("base_maps") or {}))
         .call()
     )
 
     time_range = (
-        set_time_range.validate()
+        task(set_time_range)
+        .validate()
         .set_task_instance_id("time_range")
         .handle_errors()
         .with_tracing()
@@ -231,14 +232,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(
-            time_format="%d %b %Y %H:%M:%S %Z", **(params_dict.get("time_range") or {})
-        )
+        .partial(time_format="%d %b %Y %H:%M:%S %Z", **(params.get("time_range") or {}))
         .call()
     )
 
     get_timezone = (
-        get_timezone_from_time_range.validate()
+        task(get_timezone_from_time_range)
+        .validate()
         .set_task_instance_id("get_timezone")
         .handle_errors()
         .with_tracing()
@@ -249,12 +249,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(time_range=time_range, **(params_dict.get("get_timezone") or {}))
+        .partial(time_range=time_range, **(params.get("get_timezone") or {}))
         .call()
     )
 
     groupers = (
-        set_groupers.validate()
+        task(set_groupers)
+        .validate()
         .set_task_instance_id("groupers")
         .handle_errors()
         .with_tracing()
@@ -265,12 +266,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(**(params_dict.get("groupers") or {}))
+        .partial(**(params.get("groupers") or {}))
         .call()
     )
 
     events = (
-        get_events.validate()
+        task(get_events)
+        # 🧪 validation omitted for mocked IO task (returns pre-loaded example data)
         .set_task_instance_id("events")
         .handle_errors()
         .with_tracing()
@@ -300,13 +302,14 @@ def main(params: Params):
             include_null_geometry=True,
             include_display_values=True,
             include_related_events=False,
-            **(params_dict.get("events") or {}),
+            **(params.get("events") or {}),
         )
         .call()
     )
 
     resolved_events = (
-        filter_row_values.validate()
+        task(filter_row_values)
+        .validate()
         .set_task_instance_id("resolved_events")
         .handle_errors()
         .with_tracing()
@@ -321,13 +324,14 @@ def main(params: Params):
             df=events,
             column="state",
             values=["resolved"],
-            **(params_dict.get("resolved_events") or {}),
+            **(params.get("resolved_events") or {}),
         )
         .call()
     )
 
     events_tz = (
-        convert_values_to_timezone.validate()
+        task(convert_values_to_timezone)
+        .validate()
         .set_task_instance_id("events_tz")
         .handle_errors()
         .with_tracing()
@@ -342,13 +346,14 @@ def main(params: Params):
             df=resolved_events,
             timezone=get_timezone,
             columns=["time"],
-            **(params_dict.get("events_tz") or {}),
+            **(params.get("events_tz") or {}),
         )
         .call()
     )
 
     processed_events = (
-        process_events_details.validate()
+        task(process_events_details)
+        # 🧪 validation omitted for mocked IO task (returns pre-loaded example data)
         .set_task_instance_id("processed_events")
         .handle_errors()
         .with_tracing()
@@ -364,13 +369,14 @@ def main(params: Params):
             client=er_client,
             map_to_titles=False,
             ordered=True,
-            **(params_dict.get("processed_events") or {}),
+            **(params.get("processed_events") or {}),
         )
         .call()
     )
 
     extract_participants_total = (
-        extract_value_from_json_column.validate()
+        task(extract_value_from_json_column)
+        .validate()
         .set_task_instance_id("extract_participants_total")
         .handle_errors()
         .with_tracing()
@@ -387,13 +393,14 @@ def main(params: Params):
             field_name_options=["participants_total"],
             output_column_name="participants_total",
             output_type="float",
-            **(params_dict.get("extract_participants_total") or {}),
+            **(params.get("extract_participants_total") or {}),
         )
         .call()
     )
 
     extract_participants_men = (
-        extract_value_from_json_column.validate()
+        task(extract_value_from_json_column)
+        .validate()
         .set_task_instance_id("extract_participants_men")
         .handle_errors()
         .with_tracing()
@@ -410,13 +417,14 @@ def main(params: Params):
             field_name_options=["participants_men"],
             output_column_name="participants_men",
             output_type="float",
-            **(params_dict.get("extract_participants_men") or {}),
+            **(params.get("extract_participants_men") or {}),
         )
         .call()
     )
 
     extract_participants_women = (
-        extract_value_from_json_column.validate()
+        task(extract_value_from_json_column)
+        .validate()
         .set_task_instance_id("extract_participants_women")
         .handle_errors()
         .with_tracing()
@@ -433,13 +441,14 @@ def main(params: Params):
             field_name_options=["participants_women"],
             output_column_name="participants_women",
             output_type="float",
-            **(params_dict.get("extract_participants_women") or {}),
+            **(params.get("extract_participants_women") or {}),
         )
         .call()
     )
 
     extract_youth_male = (
-        extract_value_from_json_column.validate()
+        task(extract_value_from_json_column)
+        .validate()
         .set_task_instance_id("extract_youth_male")
         .handle_errors()
         .with_tracing()
@@ -456,13 +465,14 @@ def main(params: Params):
             field_name_options=["participants_youth_male"],
             output_column_name="participants_youth_male",
             output_type="float",
-            **(params_dict.get("extract_youth_male") or {}),
+            **(params.get("extract_youth_male") or {}),
         )
         .call()
     )
 
     extract_youth_female = (
-        extract_value_from_json_column.validate()
+        task(extract_value_from_json_column)
+        .validate()
         .set_task_instance_id("extract_youth_female")
         .handle_errors()
         .with_tracing()
@@ -479,13 +489,14 @@ def main(params: Params):
             field_name_options=["participants_youth_female"],
             output_column_name="participants_youth_female",
             output_type="float",
-            **(params_dict.get("extract_youth_female") or {}),
+            **(params.get("extract_youth_female") or {}),
         )
         .call()
     )
 
     extract_location_one = (
-        extract_value_from_json_column.validate()
+        task(extract_value_from_json_column)
+        .validate()
         .set_task_instance_id("extract_location_one")
         .handle_errors()
         .with_tracing()
@@ -502,13 +513,14 @@ def main(params: Params):
             field_name_options=["meeting_location_level_one"],
             output_column_name="meeting_location_level_one",
             output_type="str",
-            **(params_dict.get("extract_location_one") or {}),
+            **(params.get("extract_location_one") or {}),
         )
         .call()
     )
 
     events_with_temporal_index = (
-        add_temporal_idx.validate()
+        task(add_temporal_idx)
+        .validate()
         .set_task_instance_id("events_with_temporal_index")
         .handle_errors()
         .with_tracing()
@@ -525,13 +537,14 @@ def main(params: Params):
             groupers=groupers,
             cast_to_datetime=True,
             format="mixed",
-            **(params_dict.get("events_with_temporal_index") or {}),
+            **(params.get("events_with_temporal_index") or {}),
         )
         .call()
     )
 
     grouped_events = (
-        split_groups.validate()
+        task(split_groups)
+        .validate()
         .set_task_instance_id("grouped_events")
         .handle_errors()
         .with_tracing()
@@ -545,13 +558,14 @@ def main(params: Params):
         .partial(
             df=events_with_temporal_index,
             groupers=groupers,
-            **(params_dict.get("grouped_events") or {}),
+            **(params.get("grouped_events") or {}),
         )
         .call()
     )
 
     total_meetings = (
-        dataframe_count.validate()
+        task(dataframe_count)
+        .validate()
         .set_task_instance_id("total_meetings")
         .handle_errors()
         .with_tracing()
@@ -562,12 +576,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(**(params_dict.get("total_meetings") or {}))
+        .partial(**(params.get("total_meetings") or {}))
         .mapvalues(argnames=["df"], argvalues=grouped_events)
     )
 
     total_meetings_widget = (
-        create_single_value_widget_single_view.validate()
+        task(create_single_value_widget_single_view)
+        .validate()
         .set_task_instance_id("total_meetings_widget")
         .handle_errors()
         .with_tracing()
@@ -580,13 +595,14 @@ def main(params: Params):
         .partial(
             title="Total Meetings",
             decimal_places=0,
-            **(params_dict.get("total_meetings_widget") or {}),
+            **(params.get("total_meetings_widget") or {}),
         )
         .map(argnames=["view", "data"], argvalues=total_meetings)
     )
 
     total_meetings_merged = (
-        merge_widget_views.validate()
+        task(merge_widget_views)
+        .validate()
         .set_task_instance_id("total_meetings_merged")
         .handle_errors()
         .with_tracing()
@@ -597,14 +613,14 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            widgets=total_meetings_widget,
-            **(params_dict.get("total_meetings_merged") or {}),
+            widgets=total_meetings_widget, **(params.get("total_meetings_merged") or {})
         )
         .call()
     )
 
     total_participants = (
-        dataframe_column_sum.validate()
+        task(dataframe_column_sum)
+        .validate()
         .set_task_instance_id("total_participants")
         .handle_errors()
         .with_tracing()
@@ -616,14 +632,14 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            column_name="participants_total",
-            **(params_dict.get("total_participants") or {}),
+            column_name="participants_total", **(params.get("total_participants") or {})
         )
         .mapvalues(argnames=["df"], argvalues=grouped_events)
     )
 
     total_participants_widget = (
-        create_single_value_widget_single_view.validate()
+        task(create_single_value_widget_single_view)
+        .validate()
         .set_task_instance_id("total_participants_widget")
         .handle_errors()
         .with_tracing()
@@ -636,13 +652,14 @@ def main(params: Params):
         .partial(
             title="Total Participants",
             decimal_places=0,
-            **(params_dict.get("total_participants_widget") or {}),
+            **(params.get("total_participants_widget") or {}),
         )
         .map(argnames=["view", "data"], argvalues=total_participants)
     )
 
     total_participants_merged = (
-        merge_widget_views.validate()
+        task(merge_widget_views)
+        .validate()
         .set_task_instance_id("total_participants_merged")
         .handle_errors()
         .with_tracing()
@@ -654,13 +671,14 @@ def main(params: Params):
         )
         .partial(
             widgets=total_participants_widget,
-            **(params_dict.get("total_participants_merged") or {}),
+            **(params.get("total_participants_merged") or {}),
         )
         .call()
     )
 
     median_participants = (
-        compute_median.validate()
+        task(compute_median)
+        .validate()
         .set_task_instance_id("median_participants")
         .handle_errors()
         .with_tracing()
@@ -672,14 +690,14 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            column="participants_total",
-            **(params_dict.get("median_participants") or {}),
+            column="participants_total", **(params.get("median_participants") or {})
         )
         .mapvalues(argnames=["df"], argvalues=grouped_events)
     )
 
     median_participants_widget = (
-        create_single_value_widget_single_view.validate()
+        task(create_single_value_widget_single_view)
+        .validate()
         .set_task_instance_id("median_participants_widget")
         .handle_errors()
         .with_tracing()
@@ -692,13 +710,14 @@ def main(params: Params):
         .partial(
             title="Median Participants / Meeting",
             decimal_places=1,
-            **(params_dict.get("median_participants_widget") or {}),
+            **(params.get("median_participants_widget") or {}),
         )
         .map(argnames=["view", "data"], argvalues=median_participants)
     )
 
     median_participants_merged = (
-        merge_widget_views.validate()
+        task(merge_widget_views)
+        .validate()
         .set_task_instance_id("median_participants_merged")
         .handle_errors()
         .with_tracing()
@@ -710,13 +729,14 @@ def main(params: Params):
         )
         .partial(
             widgets=median_participants_widget,
-            **(params_dict.get("median_participants_merged") or {}),
+            **(params.get("median_participants_merged") or {}),
         )
         .call()
     )
 
     box_plot = (
-        draw_boxplot.validate()
+        task(draw_boxplot)
+        .validate()
         .set_task_instance_id("box_plot")
         .handle_errors()
         .with_tracing()
@@ -746,13 +766,14 @@ def main(params: Params):
                 "yaxis": {"title": "Participants"},
                 "plot_bgcolor": "white",
             },
-            **(params_dict.get("box_plot") or {}),
+            **(params.get("box_plot") or {}),
         )
         .mapvalues(argnames=["dataframe"], argvalues=grouped_events)
     )
 
     box_plot_html = (
-        persist_text.validate()
+        task(persist_text)
+        .validate()
         .set_task_instance_id("box_plot_html")
         .handle_errors()
         .with_tracing()
@@ -764,15 +785,16 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            root_path=os.environ["WT_RESULTS"],
             filename_suffix="box_plot",
-            **(params_dict.get("box_plot_html") or {}),
+            **(params.get("box_plot_html") or {}),
         )
         .mapvalues(argnames=["text"], argvalues=box_plot)
     )
 
     box_plot_widget = (
-        create_plot_widget_single_view.validate()
+        task(create_plot_widget_single_view)
+        .validate()
         .set_task_instance_id("box_plot_widget")
         .handle_errors()
         .with_tracing()
@@ -784,13 +806,14 @@ def main(params: Params):
         )
         .partial(
             title="Participants per Meeting Distribution",
-            **(params_dict.get("box_plot_widget") or {}),
+            **(params.get("box_plot_widget") or {}),
         )
         .map(argnames=["view", "data"], argvalues=box_plot_html)
     )
 
     box_plot_merged = (
-        merge_widget_views.validate()
+        task(merge_widget_views)
+        .validate()
         .set_task_instance_id("box_plot_merged")
         .handle_errors()
         .with_tracing()
@@ -800,12 +823,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(widgets=box_plot_widget, **(params_dict.get("box_plot_merged") or {}))
+        .partial(widgets=box_plot_widget, **(params.get("box_plot_merged") or {}))
         .call()
     )
 
     gender_breakdown = (
-        prepare_gender_breakdown.validate()
+        task(prepare_gender_breakdown)
+        .validate()
         .set_task_instance_id("gender_breakdown")
         .handle_errors()
         .with_tracing()
@@ -821,13 +845,14 @@ def main(params: Params):
             women_column="participants_women",
             youth_men_column="participants_youth_male",
             youth_women_column="participants_youth_female",
-            **(params_dict.get("gender_breakdown") or {}),
+            **(params.get("gender_breakdown") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=grouped_events)
     )
 
     gender_colormap = (
-        apply_color_map.validate()
+        task(apply_color_map)
+        .validate()
         .set_task_instance_id("gender_colormap")
         .handle_errors()
         .with_tracing()
@@ -842,13 +867,14 @@ def main(params: Params):
             input_column_name="category",
             output_column_name="gender_color",
             colormap="Paired",
-            **(params_dict.get("gender_colormap") or {}),
+            **(params.get("gender_colormap") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=gender_breakdown)
     )
 
     gender_pie_chart = (
-        draw_pie_chart.validate()
+        task(draw_pie_chart)
+        .validate()
         .set_task_instance_id("gender_pie_chart")
         .handle_errors()
         .with_tracing()
@@ -865,13 +891,14 @@ def main(params: Params):
             color_column="gender_color",
             plot_style={"textinfo": "label+percent"},
             layout_style={"title": None},
-            **(params_dict.get("gender_pie_chart") or {}),
+            **(params.get("gender_pie_chart") or {}),
         )
         .mapvalues(argnames=["dataframe"], argvalues=gender_colormap)
     )
 
     gender_pie_chart_html = (
-        persist_text.validate()
+        task(persist_text)
+        .validate()
         .set_task_instance_id("gender_pie_chart_html")
         .handle_errors()
         .with_tracing()
@@ -883,15 +910,16 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            root_path=os.environ["WT_RESULTS"],
             filename_suffix="gender_pie_chart",
-            **(params_dict.get("gender_pie_chart_html") or {}),
+            **(params.get("gender_pie_chart_html") or {}),
         )
         .mapvalues(argnames=["text"], argvalues=gender_pie_chart)
     )
 
     gender_pie_chart_widget = (
-        create_plot_widget_single_view.validate()
+        task(create_plot_widget_single_view)
+        .validate()
         .set_task_instance_id("gender_pie_chart_widget")
         .handle_errors()
         .with_tracing()
@@ -903,13 +931,14 @@ def main(params: Params):
         )
         .partial(
             title="Men / Women / Youth Men / Youth Women",
-            **(params_dict.get("gender_pie_chart_widget") or {}),
+            **(params.get("gender_pie_chart_widget") or {}),
         )
         .map(argnames=["view", "data"], argvalues=gender_pie_chart_html)
     )
 
     gender_pie_chart_merged = (
-        merge_widget_views.validate()
+        task(merge_widget_views)
+        .validate()
         .set_task_instance_id("gender_pie_chart_merged")
         .handle_errors()
         .with_tracing()
@@ -921,13 +950,14 @@ def main(params: Params):
         )
         .partial(
             widgets=gender_pie_chart_widget,
-            **(params_dict.get("gender_pie_chart_merged") or {}),
+            **(params.get("gender_pie_chart_merged") or {}),
         )
         .call()
     )
 
     topic_bar_chart = (
-        draw_topic_bar_chart.validate()
+        task(draw_topic_bar_chart)
+        .validate()
         .set_task_instance_id("topic_bar_chart")
         .handle_errors()
         .with_tracing()
@@ -947,13 +977,14 @@ def main(params: Params):
             x_axis_title="Location",
             y_axis_title="Frequency",
             colormap="Paired",
-            **(params_dict.get("topic_bar_chart") or {}),
+            **(params.get("topic_bar_chart") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=grouped_events)
     )
 
     topic_bar_chart_html = (
-        persist_text.validate()
+        task(persist_text)
+        .validate()
         .set_task_instance_id("topic_bar_chart_html")
         .handle_errors()
         .with_tracing()
@@ -965,15 +996,16 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            root_path=os.environ["WT_RESULTS"],
             filename_suffix="topic_bar_chart",
-            **(params_dict.get("topic_bar_chart_html") or {}),
+            **(params.get("topic_bar_chart_html") or {}),
         )
         .mapvalues(argnames=["text"], argvalues=topic_bar_chart)
     )
 
     topic_bar_chart_widget = (
-        create_plot_widget_single_view.validate()
+        task(create_plot_widget_single_view)
+        .validate()
         .set_task_instance_id("topic_bar_chart_widget")
         .handle_errors()
         .with_tracing()
@@ -985,13 +1017,14 @@ def main(params: Params):
         )
         .partial(
             title="Topics Covered by Location",
-            **(params_dict.get("topic_bar_chart_widget") or {}),
+            **(params.get("topic_bar_chart_widget") or {}),
         )
         .map(argnames=["view", "data"], argvalues=topic_bar_chart_html)
     )
 
     topic_bar_chart_merged = (
-        merge_widget_views.validate()
+        task(merge_widget_views)
+        .validate()
         .set_task_instance_id("topic_bar_chart_merged")
         .handle_errors()
         .with_tracing()
@@ -1003,13 +1036,14 @@ def main(params: Params):
         )
         .partial(
             widgets=topic_bar_chart_widget,
-            **(params_dict.get("topic_bar_chart_merged") or {}),
+            **(params.get("topic_bar_chart_merged") or {}),
         )
         .call()
     )
 
     topic_location_pivot = (
-        build_topic_location_table.validate()
+        task(build_topic_location_table)
+        .validate()
         .set_task_instance_id("topic_location_pivot")
         .handle_errors()
         .with_tracing()
@@ -1025,13 +1059,14 @@ def main(params: Params):
             location_column="meeting_location_level_one",
             topic_key="topics",
             topic_field="topic",
-            **(params_dict.get("topic_location_pivot") or {}),
+            **(params.get("topic_location_pivot") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=grouped_events)
     )
 
     adjudication_polygons = (
-        load_adjudication_polygons.validate()
+        task(load_adjudication_polygons)
+        .validate()
         .set_task_instance_id("adjudication_polygons")
         .handle_errors()
         .with_tracing()
@@ -1042,12 +1077,13 @@ def main(params: Params):
             ],
             unpack_depth=1,
         )
-        .partial(**(params_dict.get("adjudication_polygons") or {}))
+        .partial(**(params.get("adjudication_polygons") or {}))
         .call()
     )
 
     choropleth_groupers = (
-        exclude_groupers.validate()
+        task(exclude_groupers)
+        .validate()
         .set_task_instance_id("choropleth_groupers")
         .handle_errors()
         .with_tracing()
@@ -1061,13 +1097,14 @@ def main(params: Params):
         .partial(
             groupers=groupers,
             exclude=["meeting_location_level_one"],
-            **(params_dict.get("choropleth_groupers") or {}),
+            **(params.get("choropleth_groupers") or {}),
         )
         .call()
     )
 
     choropleth_events = (
-        split_groups.validate()
+        task(split_groups)
+        .validate()
         .set_task_instance_id("choropleth_events")
         .handle_errors()
         .with_tracing()
@@ -1081,13 +1118,14 @@ def main(params: Params):
         .partial(
             df=events_with_temporal_index,
             groupers=choropleth_groupers,
-            **(params_dict.get("choropleth_events") or {}),
+            **(params.get("choropleth_events") or {}),
         )
         .call()
     )
 
     choropleth_joined = (
-        join_meeting_counts_to_polygons.validate()
+        task(join_meeting_counts_to_polygons)
+        .validate()
         .set_task_instance_id("choropleth_joined")
         .handle_errors()
         .with_tracing()
@@ -1103,13 +1141,14 @@ def main(params: Params):
             polygon_name_column="Name",
             event_location_column="meeting_location_level_one",
             count_column="meeting_count",
-            **(params_dict.get("choropleth_joined") or {}),
+            **(params.get("choropleth_joined") or {}),
         )
         .mapvalues(argnames=["events"], argvalues=choropleth_events)
     )
 
     choropleth_colormap = (
-        apply_choropleth_colormap.validate()
+        task(apply_choropleth_colormap)
+        .validate()
         .set_task_instance_id("choropleth_colormap")
         .handle_errors()
         .with_tracing()
@@ -1124,13 +1163,14 @@ def main(params: Params):
             count_column="meeting_count",
             fill_color_column="fill_color",
             label_column="choropleth_label",
-            **(params_dict.get("choropleth_colormap") or {}),
+            **(params.get("choropleth_colormap") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=choropleth_joined)
     )
 
     choropleth_count_labels = (
-        prepare_count_labels.validate()
+        task(prepare_count_labels)
+        .validate()
         .set_task_instance_id("choropleth_count_labels")
         .handle_errors()
         .with_tracing()
@@ -1145,13 +1185,14 @@ def main(params: Params):
             count_column="meeting_count",
             label_column="label",
             suffix=" meetings",
-            **(params_dict.get("choropleth_count_labels") or {}),
+            **(params.get("choropleth_count_labels") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=choropleth_colormap)
     )
 
     choropleth_name_labels = (
-        prepare_polygon_labels.validate()
+        task(prepare_polygon_labels)
+        .validate()
         .set_task_instance_id("choropleth_name_labels")
         .handle_errors()
         .with_tracing()
@@ -1165,13 +1206,14 @@ def main(params: Params):
         .partial(
             name_column="Name",
             label_column="label",
-            **(params_dict.get("choropleth_name_labels") or {}),
+            **(params.get("choropleth_name_labels") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=choropleth_colormap)
     )
 
     missing_location_events = (
-        prepare_missing_location_events.validate()
+        task(prepare_missing_location_events)
+        .validate()
         .set_task_instance_id("missing_location_events")
         .handle_errors()
         .with_tracing()
@@ -1187,13 +1229,14 @@ def main(params: Params):
             polygon_name_column="Name",
             event_location_column="meeting_location_level_one",
             label_column="label",
-            **(params_dict.get("missing_location_events") or {}),
+            **(params.get("missing_location_events") or {}),
         )
         .mapvalues(argnames=["events"], argvalues=choropleth_events)
     )
 
     choropleth_layer = (
-        create_polygon_layer_pydeck.validate()
+        task(create_polygon_layer_pydeck_1)
+        .validate()
         .set_task_instance_id("choropleth_layer")
         .handle_errors()
         .with_tracing()
@@ -1218,13 +1261,14 @@ def main(params: Params):
                 "color_column": "fill_color",
                 "title": "Meetings",
             },
-            **(params_dict.get("choropleth_layer") or {}),
+            **(params.get("choropleth_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_colormap)
     )
 
     choropleth_event_points = (
-        select_columns.validate()
+        task(select_columns)
+        .validate()
         .set_task_instance_id("choropleth_event_points")
         .handle_errors()
         .with_tracing()
@@ -1238,13 +1282,14 @@ def main(params: Params):
         .partial(
             columns=["serial_number", "state", "geometry"],
             raise_on_missing=False,
-            **(params_dict.get("choropleth_event_points") or {}),
+            **(params.get("choropleth_event_points") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=choropleth_events)
     )
 
     events_scatter_layer = (
-        create_scatterplot_layer.validate()
+        task(create_scatterplot_layer_1)
+        .validate()
         .set_task_instance_id("events_scatter_layer")
         .handle_errors()
         .with_tracing()
@@ -1267,13 +1312,14 @@ def main(params: Params):
                 "line_width_min_pixels": 1,
             },
             legend=None,
-            **(params_dict.get("events_scatter_layer") or {}),
+            **(params.get("events_scatter_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_event_points)
     )
 
     choropleth_name_layer = (
-        create_text_layer_pydeck.validate()
+        task(create_text_layer_pydeck_1)
+        .validate()
         .set_task_instance_id("choropleth_name_layer")
         .handle_errors()
         .with_tracing()
@@ -1294,13 +1340,14 @@ def main(params: Params):
                 "background": False,
                 "get_pixel_offset": [0, -10],
             },
-            **(params_dict.get("choropleth_name_layer") or {}),
+            **(params.get("choropleth_name_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_name_labels)
     )
 
     choropleth_count_layer = (
-        create_text_layer_pydeck.validate()
+        task(create_text_layer_pydeck_1)
+        .validate()
         .set_task_instance_id("choropleth_count_layer")
         .handle_errors()
         .with_tracing()
@@ -1321,13 +1368,14 @@ def main(params: Params):
                 "background": False,
                 "get_pixel_offset": [0, 10],
             },
-            **(params_dict.get("choropleth_count_layer") or {}),
+            **(params.get("choropleth_count_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_count_labels)
     )
 
     missing_scatter_layer = (
-        create_scatterplot_layer.validate()
+        task(create_scatterplot_layer_1)
+        .validate()
         .set_task_instance_id("missing_scatter_layer")
         .handle_errors()
         .with_tracing()
@@ -1350,13 +1398,14 @@ def main(params: Params):
                 "line_width_min_pixels": 1,
             },
             legend=None,
-            **(params_dict.get("missing_scatter_layer") or {}),
+            **(params.get("missing_scatter_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=missing_location_events)
     )
 
     missing_label_layer = (
-        create_text_layer_pydeck.validate()
+        task(create_text_layer_pydeck_1)
+        .validate()
         .set_task_instance_id("missing_label_layer")
         .handle_errors()
         .with_tracing()
@@ -1377,13 +1426,14 @@ def main(params: Params):
                 "background": False,
                 "get_pixel_offset": [0, -14],
             },
-            **(params_dict.get("missing_label_layer") or {}),
+            **(params.get("missing_label_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=missing_location_events)
     )
 
     choropleth_geo_layers = (
-        groupbykey.validate()
+        task(groupbykey)
+        .validate()
         .set_task_instance_id("choropleth_geo_layers")
         .handle_errors()
         .with_tracing()
@@ -1403,13 +1453,14 @@ def main(params: Params):
                 missing_scatter_layer,
                 missing_label_layer,
             ],
-            **(params_dict.get("choropleth_geo_layers") or {}),
+            **(params.get("choropleth_geo_layers") or {}),
         )
         .call()
     )
 
     choropleth_view_state = (
-        create_viewstate_gdf.validate()
+        task(create_viewstate_gdf)
+        .validate()
         .set_task_instance_id("choropleth_view_state")
         .handle_errors()
         .with_tracing()
@@ -1425,13 +1476,14 @@ def main(params: Params):
             padding=0.2,
             viewport_width=1280,
             viewport_height=720,
-            **(params_dict.get("choropleth_view_state") or {}),
+            **(params.get("choropleth_view_state") or {}),
         )
         .call()
     )
 
     choropleth_map = (
-        draw_map.validate()
+        task(draw_map_1)
+        .validate()
         .set_task_instance_id("choropleth_map")
         .handle_errors()
         .with_tracing()
@@ -1449,13 +1501,14 @@ def main(params: Params):
             max_zoom=20,
             view_state=choropleth_view_state,
             legend_style={"placement": "bottom-right"},
-            **(params_dict.get("choropleth_map") or {}),
+            **(params.get("choropleth_map") or {}),
         )
         .mapvalues(argnames=["geo_layers"], argvalues=choropleth_geo_layers)
     )
 
     choropleth_map_html = (
-        persist_text.validate()
+        task(persist_text)
+        .validate()
         .set_task_instance_id("choropleth_map_html")
         .handle_errors()
         .with_tracing()
@@ -1467,15 +1520,16 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            root_path=os.environ["WT_RESULTS"],
             filename_suffix="choropleth_map",
-            **(params_dict.get("choropleth_map_html") or {}),
+            **(params.get("choropleth_map_html") or {}),
         )
         .mapvalues(argnames=["text"], argvalues=choropleth_map)
     )
 
     choropleth_map_html_expanded = (
-        expand_to_composite_keys.validate()
+        task(expand_to_composite_keys)
+        .validate()
         .set_task_instance_id("choropleth_map_html_expanded")
         .handle_errors()
         .with_tracing()
@@ -1488,13 +1542,14 @@ def main(params: Params):
         .partial(
             keyed_values=choropleth_map_html,
             reference=grouped_events,
-            **(params_dict.get("choropleth_map_html_expanded") or {}),
+            **(params.get("choropleth_map_html_expanded") or {}),
         )
         .call()
     )
 
     choropleth_map_widget = (
-        create_map_widget_single_view.validate()
+        task(create_map_widget_single_view)
+        .validate()
         .set_task_instance_id("choropleth_map_widget")
         .handle_errors()
         .with_tracing()
@@ -1506,13 +1561,14 @@ def main(params: Params):
         )
         .partial(
             title="Meetings per Adjudication",
-            **(params_dict.get("choropleth_map_widget") or {}),
+            **(params.get("choropleth_map_widget") or {}),
         )
         .map(argnames=["view", "data"], argvalues=choropleth_map_html_expanded)
     )
 
     choropleth_map_merged = (
-        merge_widget_views.validate()
+        task(merge_widget_views)
+        .validate()
         .set_task_instance_id("choropleth_map_merged")
         .handle_errors()
         .with_tracing()
@@ -1523,14 +1579,14 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            widgets=choropleth_map_widget,
-            **(params_dict.get("choropleth_map_merged") or {}),
+            widgets=choropleth_map_widget, **(params.get("choropleth_map_merged") or {})
         )
         .call()
     )
 
     box_plot_png = (
-        html_to_png.validate()
+        task(html_to_png)
+        .validate()
         .set_task_instance_id("box_plot_png")
         .handle_errors()
         .with_tracing()
@@ -1542,15 +1598,16 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            output_dir=os.environ["WT_RESULTS"],
             config={"full_page": False},
-            **(params_dict.get("box_plot_png") or {}),
+            **(params.get("box_plot_png") or {}),
         )
         .mapvalues(argnames=["html_path"], argvalues=box_plot_html)
     )
 
     pie_chart_png = (
-        html_to_png.validate()
+        task(html_to_png)
+        .validate()
         .set_task_instance_id("pie_chart_png")
         .handle_errors()
         .with_tracing()
@@ -1562,15 +1619,16 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            output_dir=os.environ["WT_RESULTS"],
             config={"full_page": False},
-            **(params_dict.get("pie_chart_png") or {}),
+            **(params.get("pie_chart_png") or {}),
         )
         .mapvalues(argnames=["html_path"], argvalues=gender_pie_chart_html)
     )
 
     choropleth_png = (
-        html_to_png.validate()
+        task(html_to_png)
+        .validate()
         .set_task_instance_id("choropleth_png")
         .handle_errors()
         .with_tracing()
@@ -1582,15 +1640,16 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            output_dir=os.environ["WT_RESULTS"],
             config={"full_page": False},
-            **(params_dict.get("choropleth_png") or {}),
+            **(params.get("choropleth_png") or {}),
         )
         .mapvalues(argnames=["html_path"], argvalues=choropleth_map_html_expanded)
     )
 
     report_inputs = (
-        groupbykey.validate()
+        task(groupbykey)
+        .validate()
         .set_task_instance_id("report_inputs")
         .handle_errors()
         .with_tracing()
@@ -1609,13 +1668,14 @@ def main(params: Params):
                 choropleth_png,
                 topic_location_pivot,
             ],
-            **(params_dict.get("report_inputs") or {}),
+            **(params.get("report_inputs") or {}),
         )
         .call()
     )
 
     generate_report = (
-        generate_community_report.validate()
+        task(generate_community_report)
+        .validate()
         .set_task_instance_id("generate_report")
         .handle_errors()
         .with_tracing()
@@ -1626,7 +1686,7 @@ def main(params: Params):
             unpack_depth=1,
         )
         .partial(
-            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            output_dir=os.environ["WT_RESULTS"],
             user_details=user_details,
             time_range=time_range,
             site_url=er_site_url,
@@ -1636,13 +1696,14 @@ def main(params: Params):
             location_column="meeting_location_level_one",
             workflow_title="Community Engagement Report",
             workflow_subtitle="Wildlife Dynamics",
-            **(params_dict.get("generate_report") or {}),
+            **(params.get("generate_report") or {}),
         )
         .mapvalues(argnames=["report_data"], argvalues=report_inputs)
     )
 
     dashboard = (
-        gather_dashboard.validate()
+        task(gather_dashboard)
+        .validate()
         .set_task_instance_id("dashboard")
         .handle_errors()
         .with_tracing()
@@ -1666,7 +1727,7 @@ def main(params: Params):
             ],
             time_range=time_range,
             groupers=groupers,
-            **(params_dict.get("dashboard") or {}),
+            **(params.get("dashboard") or {}),
         )
         .call()
     )

@@ -72,7 +72,7 @@ workflow_dash=$(echo $workflow_name | tr '_' '-')
 
 # Get absolute paths
 repo_root=$(pwd)
-workflow_dir="${repo_root}/ecoscope-workflows-${workflow_dash}-workflow"
+workflow_dir="${repo_root}/wt-${workflow_dash}-workflow"
 manifest_path="${workflow_dir}/pixi.toml"
 test_cases_file="${repo_root}/test-cases.yaml"
 
@@ -144,8 +144,8 @@ run_single_test_case() {
     [ "$quiet" = false ] && echo "Created results directory: $results_dir"
     [ "$quiet" = false ] && echo ""
 
-    # Export ECOSCOPE_WORKFLOWS_RESULTS for workflow to use
-    export ECOSCOPE_WORKFLOWS_RESULTS="file://${results_dir}"
+    # Export WT_RESULTS for workflow to use
+    export WT_RESULTS="file://${results_dir}"
 
     # Extract params for this test case
     params_file="${results_dir}/params.yaml"
@@ -160,7 +160,7 @@ run_single_test_case() {
     # Run workflow CLI directly
     if [ "$quiet" = false ]; then
         echo "Executing workflow..."
-        echo "Results will be written to: $ECOSCOPE_WORKFLOWS_RESULTS"
+        echo "Results will be written to: $WT_RESULTS"
         echo ""
     fi
 
@@ -168,7 +168,7 @@ run_single_test_case() {
     workflow_underscore=$(echo $workflow_name | tr '-' '_')
 
     # Build the command with conditional --mock-io flag
-    cmd="python -m ecoscope_workflows_${workflow_underscore}_workflow.cli run --config-file $params_file --execution-mode sequential"
+    cmd="python -m wt_${workflow_underscore}_workflow.cli run --config-file $params_file --execution-mode sequential"
     if [ "$use_mock_io" = "true" ]; then
         cmd="$cmd --mock-io"
     fi

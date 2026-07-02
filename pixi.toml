@@ -10,16 +10,6 @@ channels = [
   'conda-forge',
 ]
 
-[feature.compile.dependencies]
-ecoscope-workflows-core = "0.22.18.*"
-ecoscope-workflows-ext-ecoscope = "0.22.18.*"
-ecoscope-workflows-ext-custom = "0.0.57.*"
-pydeck = "0.9.2"
-ecoscope-workflows-ext-eden = "*"
-# Here we don't specify the channel on purpose, as we want to use the local channel if it exists,
-# otherwise we fall back to the default channel.
-# If you want to ensure a specific channel to incorporate your local changes, you can uncomment the line below.
-# ecoscope-workflows-ext-eden = { version = "*", channel = "file:///tmp/ecoscope-workflows-custom/release/artifacts/" }
-
-[environments]
-compile = { features = ["compile"], solve-group = "compile", no-default-feature = true }
+[dependencies]
+wt-compiler = "==0.8.2"
+graphviz = "*"
