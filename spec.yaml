@@ -124,7 +124,7 @@ workflow:
 
   - name: Define Base Maps
     id: base_maps
-    task: set_base_maps_pydeck
+    task: set_base_maps
 
   - name: Time Range
     id: time_range
@@ -660,7 +660,7 @@ workflow:
 
       - name: Create Choropleth Polygon Layer
         id: choropleth_layer
-        task: ecoscope_workflows_ext_custom.tasks.results.create_polygon_layer_pydeck
+        task: ecoscope.platform.tasks.results.create_polygon_layer_pydeck
         partial:
           data_url: null
           layer_style:
@@ -692,7 +692,7 @@ workflow:
 
       - name: Create Event Locations Scatter Layer
         id: events_scatter_layer
-        task: ecoscope_workflows_ext_custom.tasks.results.create_scatterplot_layer
+        task: ecoscope.platform.tasks.results.create_scatterplot_layer
         partial:
           data_url: null
           layer_style:
@@ -710,7 +710,7 @@ workflow:
 
       - name: Create Polygon Name Label Layer
         id: choropleth_name_layer
-        task: ecoscope_workflows_ext_custom.tasks.results.create_text_layer_pydeck
+        task: ecoscope.platform.tasks.results.create_text_layer_pydeck
         partial:
           data_url: null
           legend: null
@@ -726,7 +726,7 @@ workflow:
 
       - name: Create Meeting Count Label Layer
         id: choropleth_count_layer
-        task: ecoscope_workflows_ext_custom.tasks.results.create_text_layer_pydeck
+        task: ecoscope.platform.tasks.results.create_text_layer_pydeck
         partial:
           data_url: null
           legend: null
@@ -742,7 +742,7 @@ workflow:
 
       - name: Create Missing Location Scatter Layer
         id: missing_scatter_layer
-        task: ecoscope_workflows_ext_custom.tasks.results.create_scatterplot_layer
+        task: ecoscope.platform.tasks.results.create_scatterplot_layer
         partial:
           data_url: null
           layer_style:
@@ -760,7 +760,7 @@ workflow:
 
       - name: Create Missing Location Label Layer
         id: missing_label_layer
-        task: ecoscope_workflows_ext_custom.tasks.results.create_text_layer_pydeck
+        task: ecoscope.platform.tasks.results.create_text_layer_pydeck
         partial:
           data_url: null
           legend: null
@@ -788,16 +788,14 @@ workflow:
 
       - name: Choropleth View State
         id: choropleth_view_state
-        task: create_viewstate_gdf
+        task: ecoscope.platform.tasks.results.view_state_from_geodataframes
         partial:
-          gdf: ${{ workflow.adjudication_polygons.return }}
-          padding: 0.2
-          viewport_width: 1280
-          viewport_height: 720
+          geodataframes:
+            - ${{ workflow.adjudication_polygons.return }}
 
       - name: Draw Choropleth Map
         id: choropleth_map
-        task: ecoscope_workflows_ext_custom.tasks.results.draw_map
+        task: ecoscope.platform.tasks.results.draw_map
         partial:
           static: false
           title: null

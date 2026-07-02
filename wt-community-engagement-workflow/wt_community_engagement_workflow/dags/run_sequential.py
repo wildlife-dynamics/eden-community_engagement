@@ -24,11 +24,25 @@ from ecoscope.platform.tasks.results import (
     create_plot_widget_single_view as create_plot_widget_single_view,
 )
 from ecoscope.platform.tasks.results import (
+    create_polygon_layer_pydeck as create_polygon_layer_pydeck,
+)
+from ecoscope.platform.tasks.results import (
+    create_scatterplot_layer as create_scatterplot_layer,
+)
+from ecoscope.platform.tasks.results import (
     create_single_value_widget_single_view as create_single_value_widget_single_view,
 )
+from ecoscope.platform.tasks.results import (
+    create_text_layer_pydeck as create_text_layer_pydeck,
+)
+from ecoscope.platform.tasks.results import draw_map as draw_map
 from ecoscope.platform.tasks.results import draw_pie_chart as draw_pie_chart
 from ecoscope.platform.tasks.results import gather_dashboard as gather_dashboard
 from ecoscope.platform.tasks.results import merge_widget_views as merge_widget_views
+from ecoscope.platform.tasks.results import set_base_maps as set_base_maps
+from ecoscope.platform.tasks.results import (
+    view_state_from_geodataframes as view_state_from_geodataframes,
+)
 from ecoscope.platform.tasks.skip import (
     any_dependency_skipped as any_dependency_skipped,
 )
@@ -46,20 +60,7 @@ from ecoscope_workflows_ext_custom.tasks.io import html_to_png as html_to_png
 from ecoscope_workflows_ext_custom.tasks.io import (
     process_events_details as process_events_details,
 )
-from ecoscope_workflows_ext_custom.tasks.results import (
-    create_polygon_layer_pydeck as create_polygon_layer_pydeck_1,
-)
-from ecoscope_workflows_ext_custom.tasks.results import (
-    create_scatterplot_layer as create_scatterplot_layer_1,
-)
-from ecoscope_workflows_ext_custom.tasks.results import (
-    create_text_layer_pydeck as create_text_layer_pydeck_1,
-)
 from ecoscope_workflows_ext_custom.tasks.results import draw_boxplot as draw_boxplot
-from ecoscope_workflows_ext_custom.tasks.results import draw_map as draw_map_1
-from ecoscope_workflows_ext_custom.tasks.results import (
-    set_base_maps_pydeck as set_base_maps_pydeck,
-)
 from ecoscope_workflows_ext_custom.tasks.transformation import (
     filter_row_values as filter_row_values,
 )
@@ -74,9 +75,6 @@ from ecoscope_workflows_ext_eden.tasks import (
     build_topic_location_table as build_topic_location_table,
 )
 from ecoscope_workflows_ext_eden.tasks import compute_median as compute_median
-from ecoscope_workflows_ext_eden.tasks import (
-    create_viewstate_gdf as create_viewstate_gdf,
-)
 from ecoscope_workflows_ext_eden.tasks import (
     draw_topic_bar_chart as draw_topic_bar_chart,
 )
@@ -185,7 +183,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     base_maps = (
-        task(set_base_maps_pydeck)
+        task(set_base_maps)
         .validate()
         .set_task_instance_id("base_maps")
         .handle_errors()
@@ -1217,7 +1215,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     choropleth_layer = (
-        task(create_polygon_layer_pydeck_1)
+        task(create_polygon_layer_pydeck)
         .validate()
         .set_task_instance_id("choropleth_layer")
         .handle_errors()
@@ -1270,7 +1268,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     events_scatter_layer = (
-        task(create_scatterplot_layer_1)
+        task(create_scatterplot_layer)
         .validate()
         .set_task_instance_id("events_scatter_layer")
         .handle_errors()
@@ -1300,7 +1298,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     choropleth_name_layer = (
-        task(create_text_layer_pydeck_1)
+        task(create_text_layer_pydeck)
         .validate()
         .set_task_instance_id("choropleth_name_layer")
         .handle_errors()
@@ -1328,7 +1326,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     choropleth_count_layer = (
-        task(create_text_layer_pydeck_1)
+        task(create_text_layer_pydeck)
         .validate()
         .set_task_instance_id("choropleth_count_layer")
         .handle_errors()
@@ -1356,7 +1354,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     missing_scatter_layer = (
-        task(create_scatterplot_layer_1)
+        task(create_scatterplot_layer)
         .validate()
         .set_task_instance_id("missing_scatter_layer")
         .handle_errors()
@@ -1386,7 +1384,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     missing_label_layer = (
-        task(create_text_layer_pydeck_1)
+        task(create_text_layer_pydeck)
         .validate()
         .set_task_instance_id("missing_label_layer")
         .handle_errors()
@@ -1441,7 +1439,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     choropleth_view_state = (
-        task(create_viewstate_gdf)
+        task(view_state_from_geodataframes)
         .validate()
         .set_task_instance_id("choropleth_view_state")
         .handle_errors()
@@ -1454,17 +1452,14 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
-            gdf=adjudication_polygons,
-            padding=0.2,
-            viewport_width=1280,
-            viewport_height=720,
+            geodataframes=[adjudication_polygons],
             **(params.get("choropleth_view_state") or {}),
         )
         .call()
     )
 
     choropleth_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("choropleth_map")
         .handle_errors()
