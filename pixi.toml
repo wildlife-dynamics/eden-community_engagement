@@ -11,5 +11,9 @@ channels = [
 ]
 
 [dependencies]
+# required for compilation
 wt-compiler = "==0.8.2"
 graphviz = "*"
+
+# required for testing
+go-yq = "*"

@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 
 import click
 
-RELEASE_NAME = "wt-community-engagement-workflow"
+RELEASE_NAME = "ecoscope-workflows-community-engagement-workflow"
 
 
 @click.group()
@@ -62,7 +62,7 @@ def cli() -> None:
     help=(
         "Destination for console exporter output. Options: stdout or file. "
         "If 'file' is chosen, the output file will be 'otel_traces.jsonl' in the "
-        "WT_RESULTS results directory."
+        "ECOSCOPE_WORKFLOWS_RESULTS results directory."
     ),
 )
 def run(
@@ -121,9 +121,9 @@ def run(
             f"Invalid configuration: {e}", param_hint=param_hint
         ) from e
 
-    results_url = os.environ.get("WT_RESULTS")
+    results_url = os.environ.get("ECOSCOPE_WORKFLOWS_RESULTS")
     if not results_url:
-        raise ValueError("Environment variable WT_RESULTS is required.")
+        raise ValueError("Environment variable ECOSCOPE_WORKFLOWS_RESULTS is required.")
     try:
         _version = version(RELEASE_NAME)
     except PackageNotFoundError:
@@ -134,7 +134,7 @@ def run(
         if parsed_results_url.scheme != "file":
             raise ValueError(
                 "When using --otel-exporter console with --otel-console-exporter-dst file, "
-                "WT_RESULTS must be a file URL (file://...)."
+                "ECOSCOPE_WORKFLOWS_RESULTS must be a file URL (file://...)."
             )
         otel_exporter_kws |= make_otel_console_exporter_file_dst_kws(
             target_dir=Path(parsed_results_url.path),

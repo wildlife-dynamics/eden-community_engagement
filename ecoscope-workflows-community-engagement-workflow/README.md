@@ -5,8 +5,8 @@
 
 ```yaml
 # fingerprint:
-artifacts_sha256_basic: 057c4e912eb69f98ad44188a23751ec6f644fb73b0983138c3fcf09d1e95c726
-artifacts_sha256_strict: d3b5c5954527c9f2f6280c50eaa8484c743fd1b2a3fec0100126b78118fb8d98
+artifacts_sha256_basic: 44bcaaad9197c2b9d6cb02dafe2fd5f28940736d43ca6a1136b33988c672ee7a
+artifacts_sha256_strict: 762fcb57dfe2c0eabdc91543a8c2a72d71426ab39ef9a111f6a460a6067692d9
 installed_requirements:
 - channel: https://repo.prefix.dev/ecoscope-workflows/
   name: ecoscope-platform
@@ -21,10 +21,10 @@ installed_requirements:
   name: ecoscope-workflows-ext-eden
   version: {version: ==0.0.2}
 params_sha256: c05982509f7b12319a3cc06eb2482c85ac81147059289e54be4e21c4f71dea27
-spec_sha256: 5463b81dae3fb9a097ecabf306efa141c5cf70b98685ba6e7ee01224cff8add9
+spec_sha256: b5db6888486b21eee0f6768d3b0b54980eb50e7403863f18a972c35ef3296df6
 
 ```
 
-# wt-community-engagement-workflow
+# ecoscope-workflows-community-engagement-workflow
 
 ![](graph.png)

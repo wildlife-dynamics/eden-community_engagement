@@ -4,11 +4,11 @@ from unittest.mock import patch
 
 import jsonschema
 import pytest
-from fastapi.testclient import TestClient
-from wt_community_engagement_workflow.metadata import (
+from ecoscope_workflows_community_engagement_workflow.metadata import (
     load_params_schema,
     load_rjsf_schema,
 )
+from fastapi.testclient import TestClient
 from wt_contracts import params_to_formdata as _params_to_formdata
 from wt_runner.app import app
 from wt_runner.testing import Case

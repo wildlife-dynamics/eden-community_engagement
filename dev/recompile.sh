@@ -22,7 +22,7 @@ run_cmd() {
 
 # Derive generated directory from spec.yaml id field
 WORKFLOW_ID=$(grep '^id:' spec.yaml | sed 's/^id: *//' | tr '_' '-')
-GENERATED_DIR="wt-${WORKFLOW_ID}-workflow"
+GENERATED_DIR="ecoscope-workflows-${WORKFLOW_ID}-workflow"
 
 if [ "$local_mode" = false ]; then
     pixi update --manifest-path pixi.toml
@@ -33,7 +33,10 @@ run_cmd dot -c
 
 echo "recompiling spec.yaml with flags '--clobber ${flags}'"
 
-run_cmd wt-compiler compile --spec spec.yaml --clobber ${flags}
+run_cmd wt-compiler compile --spec spec.yaml \
+    --pkg-name-prefix=ecoscope-workflows \
+    --results-env-var=ECOSCOPE_WORKFLOWS_RESULTS \
+    --clobber ${flags}
 compile_exit=$?
 
 exit $compile_exit
