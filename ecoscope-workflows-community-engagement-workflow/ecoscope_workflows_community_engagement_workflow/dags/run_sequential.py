@@ -40,9 +40,6 @@ from ecoscope.platform.tasks.results import draw_pie_chart as draw_pie_chart
 from ecoscope.platform.tasks.results import gather_dashboard as gather_dashboard
 from ecoscope.platform.tasks.results import merge_widget_views as merge_widget_views
 from ecoscope.platform.tasks.results import set_base_maps as set_base_maps
-from ecoscope.platform.tasks.results import (
-    view_state_from_geodataframes as view_state_from_geodataframes,
-)
 from ecoscope.platform.tasks.skip import (
     any_dependency_skipped as any_dependency_skipped,
 )
@@ -75,6 +72,9 @@ from ecoscope_workflows_ext_eden.tasks import (
     build_topic_location_table as build_topic_location_table,
 )
 from ecoscope_workflows_ext_eden.tasks import compute_median as compute_median
+from ecoscope_workflows_ext_eden.tasks import (
+    create_viewstate_gdf as create_viewstate_gdf,
+)
 from ecoscope_workflows_ext_eden.tasks import (
     draw_topic_bar_chart as draw_topic_bar_chart,
 )
@@ -1439,7 +1439,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     choropleth_view_state = (
-        task(view_state_from_geodataframes)
+        task(create_viewstate_gdf)
         .validate()
         .set_task_instance_id("choropleth_view_state")
         .handle_errors()
@@ -1452,7 +1452,10 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
-            geodataframes=[adjudication_polygons],
+            gdf=adjudication_polygons,
+            padding=0.2,
+            viewport_width=1280,
+            viewport_height=720,
             **(params.get("choropleth_view_state") or {}),
         )
         .call()

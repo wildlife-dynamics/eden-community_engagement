@@ -458,19 +458,6 @@
       "required": [],
       "title": "Create Missing Location Label Layer"
     },
-    "choropleth_view_state": {
-      "additionalProperties": false,
-      "properties": {
-        "max_zoom": {
-          "default": 20,
-          "title": "Max Zoom",
-          "type": "number"
-        }
-      },
-      "required": [],
-      "type": "object",
-      "title": "Choropleth View State"
-    },
     "choropleth_map": {
       "additionalProperties": false,
       "properties": {
@@ -671,7 +658,6 @@
       "choropleth_count_layer",
       "missing_scatter_layer",
       "missing_label_layer",
-      "choropleth_view_state",
       "choropleth_map",
       "generate_report"
     ]
