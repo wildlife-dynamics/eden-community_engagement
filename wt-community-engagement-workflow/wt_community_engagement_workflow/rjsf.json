@@ -319,6 +319,13 @@
           "default": [
             "community_meeting"
           ]
+        },
+        "force_point_geometry": {
+          "default": true,
+          "title": "Force Point Geometry",
+          "type": "boolean",
+          "description": "If True, polygon/multipolygon event geometries are reduced to their centroid. Set False to preserve native geometry types.",
+          "ecoscope:advanced": true
         }
       },
       "required": [
@@ -597,14 +604,14 @@
     "ValueGrouper": {
       "properties": {
         "index_name": {
+          "title": "Category",
+          "type": "string",
           "oneOf": [
             {
               "const": "meeting_location_level_one",
               "title": "Adjudication / Camp / Chiefdom"
             }
-          ],
-          "title": "Category",
-          "type": "string"
+          ]
         }
       },
       "required": [
@@ -626,6 +633,12 @@
         "since",
         "until",
         "timezone"
+      ]
+    },
+    "events": {
+      "ui:order": [
+        "event_types",
+        "force_point_geometry"
       ]
     },
     "Choropleth Map": {

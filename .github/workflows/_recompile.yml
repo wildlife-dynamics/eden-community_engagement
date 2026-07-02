@@ -47,7 +47,7 @@ jobs:
       - name: Check for differences in generated files
         run: |
           WORKFLOW_DIR_NAME=$(echo "${{ inputs.workflow_id }}" | tr '_' '-')
-          GENERATED_DIR="ecoscope-workflows-${WORKFLOW_DIR_NAME}-workflow"
+          GENERATED_DIR="wt-${WORKFLOW_DIR_NAME}-workflow"
           EXCLUDE_PATTERNS=":(exclude)${GENERATED_DIR}/pixi.lock :(exclude)${GENERATED_DIR}/README.md :(exclude)${GENERATED_DIR}/VERSION.yaml :(exclude)${GENERATED_DIR}/graph.png"
 
           echo "Checking for differences in ${GENERATED_DIR}"
@@ -70,7 +70,7 @@ jobs:
       - name: Validate excluded files exist
         run: |
           WORKFLOW_DIR_NAME=$(echo "${{ inputs.workflow_id }}" | tr '_' '-')
-          GENERATED_DIR="ecoscope-workflows-${WORKFLOW_DIR_NAME}-workflow"
+          GENERATED_DIR="wt-${WORKFLOW_DIR_NAME}-workflow"
           errors=0
 
           for file in pixi.lock VERSION.yaml README.md; do

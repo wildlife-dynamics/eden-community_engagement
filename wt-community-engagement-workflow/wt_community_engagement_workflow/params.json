@@ -315,6 +315,13 @@
           "title": "Event Types",
           "type": "array",
           "description": "Specify the event type(s) to analyze (optional). Leave this section empty to analyze all event types."
+        },
+        "force_point_geometry": {
+          "default": true,
+          "title": "Force Point Geometry",
+          "type": "boolean",
+          "description": "If True, polygon/multipolygon event geometries are reduced to their centroid. Set False to preserve native geometry types.",
+          "ecoscope:advanced": true
         }
       },
       "required": [
@@ -488,7 +495,6 @@
     "ValueGrouper": {
       "properties": {
         "index_name": {
-          "oneOf": [],
           "title": "Category",
           "type": "string"
         }
@@ -512,6 +518,12 @@
         "since",
         "until",
         "timezone"
+      ]
+    },
+    "events": {
+      "ui:order": [
+        "event_types",
+        "force_point_geometry"
       ]
     },
     "choropleth_colormap": {
