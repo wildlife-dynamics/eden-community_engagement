@@ -722,6 +722,7 @@ workflow:
             get_color: [40, 40, 40, 230]
             background: false
             get_pixel_offset: [0, -10]
+          tooltip_columns: null
         mapvalues:
           argnames: geodataframe
           argvalues: ${{ workflow.choropleth_name_labels.return }}
@@ -738,6 +739,7 @@ workflow:
             get_color: [40, 40, 40, 230]
             background: false
             get_pixel_offset: [0, 10]
+          tooltip_columns: null
         mapvalues:
           argnames: geodataframe
           argvalues: ${{ workflow.choropleth_count_labels.return }}
@@ -773,6 +775,7 @@ workflow:
             get_color: [170, 0, 0, 240]
             background: false
             get_pixel_offset: [0, -14]
+          tooltip_columns: null
         mapvalues:
           argnames: geodataframe
           argvalues: ${{ workflow.missing_location_events.return }}

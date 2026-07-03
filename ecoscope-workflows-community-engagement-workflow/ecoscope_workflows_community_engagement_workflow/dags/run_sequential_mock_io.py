@@ -1340,6 +1340,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
                 "background": False,
                 "get_pixel_offset": [0, -10],
             },
+            tooltip_columns=None,
             **(params.get("choropleth_name_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_name_labels)
@@ -1368,6 +1369,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
                 "background": False,
                 "get_pixel_offset": [0, 10],
             },
+            tooltip_columns=None,
             **(params.get("choropleth_count_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_count_labels)
@@ -1427,6 +1429,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
                 "background": False,
                 "get_pixel_offset": [0, -14],
             },
+            tooltip_columns=None,
             **(params.get("missing_label_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=missing_location_events)
