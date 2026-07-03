@@ -908,13 +908,18 @@ workflow:
             - ${{ workflow.choropleth_png.return }}
             - ${{ workflow.topic_location_pivot.return }}
 
+      - id: norm_output_dir
+        task: remove_file_scheme
+        partial:
+          path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+
       - id: generate_report
         task: generate_community_report
         skipif:
           conditions:
             - never
         partial:
-          output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          output_dir: ${{ workflow.norm_output_dir.return }}
           user_details: ${{ workflow.user_details.return }}
           time_range: ${{ workflow.time_range.return }}
           site_url: ${{ workflow.er_site_url.return }}

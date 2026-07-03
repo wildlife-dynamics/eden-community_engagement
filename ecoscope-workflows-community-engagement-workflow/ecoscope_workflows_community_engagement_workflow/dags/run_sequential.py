@@ -57,6 +57,9 @@ from ecoscope_workflows_ext_custom.tasks.io import html_to_png as html_to_png
 from ecoscope_workflows_ext_custom.tasks.io import (
     process_events_details as process_events_details,
 )
+from ecoscope_workflows_ext_custom.tasks.io import (
+    remove_file_scheme as remove_file_scheme,
+)
 from ecoscope_workflows_ext_custom.tasks.results import draw_boxplot as draw_boxplot
 from ecoscope_workflows_ext_custom.tasks.transformation import (
     filter_row_values as filter_row_values,
@@ -1660,6 +1663,26 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .call()
     )
 
+    norm_output_dir = (
+        task(remove_file_scheme)
+        .validate()
+        .set_task_instance_id("norm_output_dir")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **(params.get("norm_output_dir") or {}),
+        )
+        .call()
+    )
+
     generate_report = (
         task(generate_community_report)
         .validate()
@@ -1673,7 +1696,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
-            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            output_dir=norm_output_dir,
             user_details=user_details,
             time_range=time_range,
             site_url=er_site_url,
