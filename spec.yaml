@@ -673,6 +673,7 @@ workflow:
             label_column: choropleth_label
             color_column: fill_color
             title: "Meetings"
+          tooltip_columns: ["Name", "meeting_count", "choropleth_label"]
         mapvalues:
           argnames: geodataframe
           argvalues: ${{ workflow.choropleth_colormap.return }}
@@ -704,6 +705,7 @@ workflow:
             get_line_color: [255, 255, 255, 180]
             line_width_min_pixels: 1
           legend: null
+          tooltip_columns: ["serial_number", "state"]
         mapvalues:
           argnames: geodataframe
           argvalues: ${{ workflow.choropleth_event_points.return }}
@@ -754,6 +756,7 @@ workflow:
             get_line_color: [255, 255, 255, 200]
             line_width_min_pixels: 1
           legend: null
+          tooltip_columns: ["label", "serial_number"]
         mapvalues:
           argnames: geodataframe
           argvalues: ${{ workflow.missing_location_events.return }}
@@ -806,6 +809,7 @@ workflow:
           view_state: ${{ workflow.choropleth_view_state.return }}
           legend_style:
             placement: bottom-right
+          output_type: html
         mapvalues:
           argnames: geo_layers
           argvalues: ${{ workflow.choropleth_geo_layers.return }}

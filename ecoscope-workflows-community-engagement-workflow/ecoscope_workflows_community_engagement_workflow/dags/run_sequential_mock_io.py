@@ -1259,6 +1259,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
                 "color_column": "fill_color",
                 "title": "Meetings",
             },
+            tooltip_columns=["Name", "meeting_count", "choropleth_label"],
             **(params.get("choropleth_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_colormap)
@@ -1310,6 +1311,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
                 "line_width_min_pixels": 1,
             },
             legend=None,
+            tooltip_columns=["serial_number", "state"],
             **(params.get("events_scatter_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_event_points)
@@ -1396,6 +1398,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
                 "line_width_min_pixels": 1,
             },
             legend=None,
+            tooltip_columns=["label", "serial_number"],
             **(params.get("missing_scatter_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=missing_location_events)
@@ -1499,6 +1502,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             max_zoom=20,
             view_state=choropleth_view_state,
             legend_style={"placement": "bottom-right"},
+            output_type="html",
             **(params.get("choropleth_map") or {}),
         )
         .mapvalues(argnames=["geo_layers"], argvalues=choropleth_geo_layers)

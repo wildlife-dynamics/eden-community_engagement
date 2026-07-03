@@ -449,42 +449,6 @@
           "type": "object",
           "title": ""
         },
-        "choropleth_layer": {
-          "additionalProperties": false,
-          "properties": {
-            "tooltip_columns": {
-              "default": null,
-              "items": {
-                "type": "string"
-              },
-              "title": "Tooltip Columns",
-              "type": "array",
-              "description": "Restrict the on-hover tooltip to these column names. None (default) shows all properties.",
-              "ecoscope:advanced": true
-            }
-          },
-          "type": "object",
-          "required": [],
-          "title": "Create Choropleth Polygon Layer"
-        },
-        "events_scatter_layer": {
-          "additionalProperties": false,
-          "properties": {
-            "tooltip_columns": {
-              "default": null,
-              "items": {
-                "type": "string"
-              },
-              "title": "Tooltip Columns",
-              "type": "array",
-              "description": "Restrict the on-hover tooltip to these column names. None (default) shows all properties.",
-              "ecoscope:advanced": true
-            }
-          },
-          "type": "object",
-          "required": [],
-          "title": "Create Event Locations Scatter Layer"
-        },
         "choropleth_name_layer": {
           "additionalProperties": false,
           "properties": {
@@ -521,24 +485,6 @@
           "required": [],
           "title": "Create Meeting Count Label Layer"
         },
-        "missing_scatter_layer": {
-          "additionalProperties": false,
-          "properties": {
-            "tooltip_columns": {
-              "default": null,
-              "items": {
-                "type": "string"
-              },
-              "title": "Tooltip Columns",
-              "type": "array",
-              "description": "Restrict the on-hover tooltip to these column names. None (default) shows all properties.",
-              "ecoscope:advanced": true
-            }
-          },
-          "type": "object",
-          "required": [],
-          "title": "Create Missing Location Scatter Layer"
-        },
         "missing_label_layer": {
           "additionalProperties": false,
           "properties": {
@@ -556,24 +502,6 @@
           "type": "object",
           "required": [],
           "title": "Create Missing Location Label Layer"
-        },
-        "choropleth_map": {
-          "additionalProperties": false,
-          "properties": {
-            "output_type": {
-              "default": "html",
-              "enum": [
-                "html",
-                "json"
-              ],
-              "title": "Output Type",
-              "type": "string",
-              "description": "Whether to return rendered HTML or a deck.gl JSON spec dict."
-            }
-          },
-          "type": "object",
-          "required": [],
-          "title": "Draw Choropleth Map"
         }
       }
     },
@@ -754,13 +682,9 @@
     "Choropleth Map": {
       "ui:order": [
         "choropleth_colormap",
-        "choropleth_layer",
-        "events_scatter_layer",
         "choropleth_name_layer",
         "choropleth_count_layer",
-        "missing_scatter_layer",
-        "missing_label_layer",
-        "choropleth_map"
+        "missing_label_layer"
       ],
       "choropleth_colormap": {
         "ui:order": [
