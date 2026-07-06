@@ -846,8 +846,6 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             total_column="participants_total",
             men_column="participants_men",
             women_column="participants_women",
-            youth_men_column="participants_youth_male",
-            youth_women_column="participants_youth_female",
             **(params.get("gender_split") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=grouped_events)
