@@ -90,7 +90,7 @@ requirements:
     version: 0.9.2
     channel: conda-forge
   - name: ecoscope-workflows-ext-eden
-    version: "0.0.3"
+    version: "0.0.4"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 
 task-instance-defaults:
@@ -434,14 +434,15 @@ workflow:
 
   # --- Gender Breakdown ---
 
-  - title: Gender Breakdown
+  - title: Gender Split
     type: task-group
-    description: Breakdown of participants by gender category — per group.
+    description: Men / Women / Unknown split of total participants — per group.
     tasks:
-      - name: Prepare Gender Breakdown
-        id: gender_breakdown
-        task: prepare_gender_breakdown
+      - name: Prepare Gender Split
+        id: gender_split
+        task: prepare_gender_split
         partial:
+          total_column: participants_total
           men_column: participants_men
           women_column: participants_women
           youth_men_column: participants_youth_male
@@ -450,8 +451,8 @@ workflow:
           argnames: df
           argvalues: ${{ workflow.grouped_events.return }}
 
-      - name: Apply Gender Colors
-        id: gender_colormap
+      - name: Apply Gender Split Colors
+        id: gender_split_colormap
         task: apply_color_map
         partial:
           input_column_name: category
@@ -459,10 +460,10 @@ workflow:
           colormap: Paired
         mapvalues:
           argnames: df
-          argvalues: ${{ workflow.gender_breakdown.return }}
+          argvalues: ${{ workflow.gender_split.return }}
 
-      - name: Draw Gender Pie Chart
-        id: gender_pie_chart
+      - name: Draw Gender Split Pie Chart
+        id: gender_split_pie_chart
         task: draw_pie_chart
         partial:
           value_column: count
@@ -474,38 +475,112 @@ workflow:
             title: null
         mapvalues:
           argnames: dataframe
-          argvalues: ${{ workflow.gender_colormap.return }}
+          argvalues: ${{ workflow.gender_split_colormap.return }}
 
-      - name: Persist Gender Pie Chart
-        id: gender_pie_chart_html
+      - name: Persist Gender Split Pie Chart
+        id: gender_split_pie_chart_html
         task: persist_text
         partial:
           root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-          filename_suffix: gender_pie_chart
+          filename_suffix: gender_split_pie_chart
         mapvalues:
           argnames: text
-          argvalues: ${{ workflow.gender_pie_chart.return }}
+          argvalues: ${{ workflow.gender_split_pie_chart.return }}
 
-      - name: Gender Pie Chart Widget
-        id: gender_pie_chart_widget
+      - name: Gender Split Pie Chart Widget
+        id: gender_split_pie_chart_widget
         task: create_plot_widget_single_view
         skipif:
           conditions:
             - never
         partial:
-          title: "Men / Women / Youth Men / Youth Women"
+          title: "Men / Women / Unknown"
         map:
           argnames: [view, data]
-          argvalues: ${{ workflow.gender_pie_chart_html.return }}
+          argvalues: ${{ workflow.gender_split_pie_chart_html.return }}
 
-      - name: Gender Pie Chart Merged
-        id: gender_pie_chart_merged
+      - name: Gender Split Pie Chart Merged
+        id: gender_split_pie_chart_merged
         task: merge_widget_views
         skipif:
           conditions:
             - never
         partial:
-          widgets: ${{ workflow.gender_pie_chart_widget.return }}
+          widgets: ${{ workflow.gender_split_pie_chart_widget.return }}
+
+  # --- Age Split ---
+
+  - title: Age Split
+    type: task-group
+    description: Youth Men / Youth Women / Adults-Unknown split of total participants — per group.
+    tasks:
+      - name: Prepare Age Split
+        id: age_split
+        task: prepare_age_split
+        partial:
+          total_column: participants_total
+          youth_men_column: participants_youth_male
+          youth_women_column: participants_youth_female
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.grouped_events.return }}
+
+      - name: Apply Age Split Colors
+        id: age_split_colormap
+        task: apply_color_map
+        partial:
+          input_column_name: category
+          output_column_name: age_color
+          colormap: Paired
+        mapvalues:
+          argnames: df
+          argvalues: ${{ workflow.age_split.return }}
+
+      - name: Draw Age Split Pie Chart
+        id: age_split_pie_chart
+        task: draw_pie_chart
+        partial:
+          value_column: count
+          label_column: category
+          color_column: age_color
+          plot_style:
+            textinfo: "label+percent"
+          layout_style:
+            title: null
+        mapvalues:
+          argnames: dataframe
+          argvalues: ${{ workflow.age_split_colormap.return }}
+
+      - name: Persist Age Split Pie Chart
+        id: age_split_pie_chart_html
+        task: persist_text
+        partial:
+          root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          filename_suffix: age_split_pie_chart
+        mapvalues:
+          argnames: text
+          argvalues: ${{ workflow.age_split_pie_chart.return }}
+
+      - name: Age Split Pie Chart Widget
+        id: age_split_pie_chart_widget
+        task: create_plot_widget_single_view
+        skipif:
+          conditions:
+            - never
+        partial:
+          title: "Youth Men / Youth Women / Adults-Unknown"
+        map:
+          argnames: [view, data]
+          argvalues: ${{ workflow.age_split_pie_chart_html.return }}
+
+      - name: Age Split Pie Chart Merged
+        id: age_split_pie_chart_merged
+        task: merge_widget_views
+        skipif:
+          conditions:
+            - never
+        partial:
+          widgets: ${{ workflow.age_split_pie_chart_widget.return }}
 
   # --- Topic Bar Chart ---
 
@@ -875,8 +950,8 @@ workflow:
           argnames: html_path
           argvalues: ${{ workflow.box_plot_html.return }}
 
-      - name: Pie Chart PNG
-        id: pie_chart_png
+      - name: Gender Pie Chart PNG
+        id: gender_pie_chart_png
         task: html_to_png
         partial:
           output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
@@ -884,7 +959,18 @@ workflow:
             full_page: false
         mapvalues:
           argnames: html_path
-          argvalues: ${{ workflow.gender_pie_chart_html.return }}
+          argvalues: ${{ workflow.gender_split_pie_chart_html.return }}
+
+      - name: Age Pie Chart PNG
+        id: age_pie_chart_png
+        task: html_to_png
+        partial:
+          output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+          config:
+            full_page: false
+        mapvalues:
+          argnames: html_path
+          argvalues: ${{ workflow.age_split_pie_chart_html.return }}
 
       - name: Choropleth PNG
         id: choropleth_png
@@ -904,7 +990,8 @@ workflow:
           iterables:
             - ${{ workflow.grouped_events.return }}
             - ${{ workflow.box_plot_png.return }}
-            - ${{ workflow.pie_chart_png.return }}
+            - ${{ workflow.gender_pie_chart_png.return }}
+            - ${{ workflow.age_pie_chart_png.return }}
             - ${{ workflow.choropleth_png.return }}
             - ${{ workflow.topic_location_pivot.return }}
 
@@ -945,8 +1032,9 @@ workflow:
         - ${{ workflow.total_participants_merged.return }}
         - ${{ workflow.median_participants_merged.return }}
         - ${{ workflow.box_plot_merged.return }}
-        - ${{ workflow.gender_pie_chart_merged.return }}
+        - ${{ workflow.gender_split_pie_chart_merged.return }}
         - ${{ workflow.topic_bar_chart_merged.return }}
         - ${{ workflow.choropleth_map_merged.return }}
+        - ${{ workflow.age_split_pie_chart_merged.return }}
       time_range: ${{ workflow.time_range.return }}
       groupers: ${{ workflow.groupers.return }}

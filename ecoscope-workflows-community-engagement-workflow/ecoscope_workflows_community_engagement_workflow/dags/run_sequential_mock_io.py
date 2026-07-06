@@ -115,11 +115,12 @@ from ecoscope_workflows_ext_eden.tasks import (
 from ecoscope_workflows_ext_eden.tasks import (
     load_adjudication_polygons as load_adjudication_polygons,
 )
+from ecoscope_workflows_ext_eden.tasks import prepare_age_split as prepare_age_split
 from ecoscope_workflows_ext_eden.tasks import (
     prepare_count_labels as prepare_count_labels,
 )
 from ecoscope_workflows_ext_eden.tasks import (
-    prepare_gender_breakdown as prepare_gender_breakdown,
+    prepare_gender_split as prepare_gender_split,
 )
 from ecoscope_workflows_ext_eden.tasks import (
     prepare_missing_location_events as prepare_missing_location_events,
@@ -828,10 +829,10 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .call()
     )
 
-    gender_breakdown = (
-        task(prepare_gender_breakdown)
+    gender_split = (
+        task(prepare_gender_split)
         .validate()
-        .set_task_instance_id("gender_breakdown")
+        .set_task_instance_id("gender_split")
         .handle_errors()
         .with_tracing()
         .skipif(
@@ -842,19 +843,20 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            total_column="participants_total",
             men_column="participants_men",
             women_column="participants_women",
             youth_men_column="participants_youth_male",
             youth_women_column="participants_youth_female",
-            **(params.get("gender_breakdown") or {}),
+            **(params.get("gender_split") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=grouped_events)
     )
 
-    gender_colormap = (
+    gender_split_colormap = (
         task(apply_color_map)
         .validate()
-        .set_task_instance_id("gender_colormap")
+        .set_task_instance_id("gender_split_colormap")
         .handle_errors()
         .with_tracing()
         .skipif(
@@ -868,15 +870,15 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             input_column_name="category",
             output_column_name="gender_color",
             colormap="Paired",
-            **(params.get("gender_colormap") or {}),
+            **(params.get("gender_split_colormap") or {}),
         )
-        .mapvalues(argnames=["df"], argvalues=gender_breakdown)
+        .mapvalues(argnames=["df"], argvalues=gender_split)
     )
 
-    gender_pie_chart = (
+    gender_split_pie_chart = (
         task(draw_pie_chart)
         .validate()
-        .set_task_instance_id("gender_pie_chart")
+        .set_task_instance_id("gender_split_pie_chart")
         .handle_errors()
         .with_tracing()
         .skipif(
@@ -892,15 +894,15 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             color_column="gender_color",
             plot_style={"textinfo": "label+percent"},
             layout_style={"title": None},
-            **(params.get("gender_pie_chart") or {}),
+            **(params.get("gender_split_pie_chart") or {}),
         )
-        .mapvalues(argnames=["dataframe"], argvalues=gender_colormap)
+        .mapvalues(argnames=["dataframe"], argvalues=gender_split_colormap)
     )
 
-    gender_pie_chart_html = (
+    gender_split_pie_chart_html = (
         task(persist_text)
         .validate()
-        .set_task_instance_id("gender_pie_chart_html")
+        .set_task_instance_id("gender_split_pie_chart_html")
         .handle_errors()
         .with_tracing()
         .skipif(
@@ -912,16 +914,16 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         )
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            filename_suffix="gender_pie_chart",
-            **(params.get("gender_pie_chart_html") or {}),
+            filename_suffix="gender_split_pie_chart",
+            **(params.get("gender_split_pie_chart_html") or {}),
         )
-        .mapvalues(argnames=["text"], argvalues=gender_pie_chart)
+        .mapvalues(argnames=["text"], argvalues=gender_split_pie_chart)
     )
 
-    gender_pie_chart_widget = (
+    gender_split_pie_chart_widget = (
         task(create_plot_widget_single_view)
         .validate()
-        .set_task_instance_id("gender_pie_chart_widget")
+        .set_task_instance_id("gender_split_pie_chart_widget")
         .handle_errors()
         .with_tracing()
         .skipif(
@@ -931,16 +933,16 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
-            title="Men / Women / Youth Men / Youth Women",
-            **(params.get("gender_pie_chart_widget") or {}),
+            title="Men / Women / Unknown",
+            **(params.get("gender_split_pie_chart_widget") or {}),
         )
-        .map(argnames=["view", "data"], argvalues=gender_pie_chart_html)
+        .map(argnames=["view", "data"], argvalues=gender_split_pie_chart_html)
     )
 
-    gender_pie_chart_merged = (
+    gender_split_pie_chart_merged = (
         task(merge_widget_views)
         .validate()
-        .set_task_instance_id("gender_pie_chart_merged")
+        .set_task_instance_id("gender_split_pie_chart_merged")
         .handle_errors()
         .with_tracing()
         .skipif(
@@ -950,8 +952,135 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
-            widgets=gender_pie_chart_widget,
-            **(params.get("gender_pie_chart_merged") or {}),
+            widgets=gender_split_pie_chart_widget,
+            **(params.get("gender_split_pie_chart_merged") or {}),
+        )
+        .call()
+    )
+
+    age_split = (
+        task(prepare_age_split)
+        .validate()
+        .set_task_instance_id("age_split")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            total_column="participants_total",
+            youth_men_column="participants_youth_male",
+            youth_women_column="participants_youth_female",
+            **(params.get("age_split") or {}),
+        )
+        .mapvalues(argnames=["df"], argvalues=grouped_events)
+    )
+
+    age_split_colormap = (
+        task(apply_color_map)
+        .validate()
+        .set_task_instance_id("age_split_colormap")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            input_column_name="category",
+            output_column_name="age_color",
+            colormap="Paired",
+            **(params.get("age_split_colormap") or {}),
+        )
+        .mapvalues(argnames=["df"], argvalues=age_split)
+    )
+
+    age_split_pie_chart = (
+        task(draw_pie_chart)
+        .validate()
+        .set_task_instance_id("age_split_pie_chart")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            value_column="count",
+            label_column="category",
+            color_column="age_color",
+            plot_style={"textinfo": "label+percent"},
+            layout_style={"title": None},
+            **(params.get("age_split_pie_chart") or {}),
+        )
+        .mapvalues(argnames=["dataframe"], argvalues=age_split_colormap)
+    )
+
+    age_split_pie_chart_html = (
+        task(persist_text)
+        .validate()
+        .set_task_instance_id("age_split_pie_chart_html")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            filename_suffix="age_split_pie_chart",
+            **(params.get("age_split_pie_chart_html") or {}),
+        )
+        .mapvalues(argnames=["text"], argvalues=age_split_pie_chart)
+    )
+
+    age_split_pie_chart_widget = (
+        task(create_plot_widget_single_view)
+        .validate()
+        .set_task_instance_id("age_split_pie_chart_widget")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                never,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            title="Youth Men / Youth Women / Adults-Unknown",
+            **(params.get("age_split_pie_chart_widget") or {}),
+        )
+        .map(argnames=["view", "data"], argvalues=age_split_pie_chart_html)
+    )
+
+    age_split_pie_chart_merged = (
+        task(merge_widget_views)
+        .validate()
+        .set_task_instance_id("age_split_pie_chart_merged")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                never,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            widgets=age_split_pie_chart_widget,
+            **(params.get("age_split_pie_chart_merged") or {}),
         )
         .call()
     )
@@ -1613,10 +1742,10 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .mapvalues(argnames=["html_path"], argvalues=box_plot_html)
     )
 
-    pie_chart_png = (
+    gender_pie_chart_png = (
         task(html_to_png)
         .validate()
-        .set_task_instance_id("pie_chart_png")
+        .set_task_instance_id("gender_pie_chart_png")
         .handle_errors()
         .with_tracing()
         .skipif(
@@ -1629,9 +1758,30 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .partial(
             output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             config={"full_page": False},
-            **(params.get("pie_chart_png") or {}),
+            **(params.get("gender_pie_chart_png") or {}),
         )
-        .mapvalues(argnames=["html_path"], argvalues=gender_pie_chart_html)
+        .mapvalues(argnames=["html_path"], argvalues=gender_split_pie_chart_html)
+    )
+
+    age_pie_chart_png = (
+        task(html_to_png)
+        .validate()
+        .set_task_instance_id("age_pie_chart_png")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            config={"full_page": False},
+            **(params.get("age_pie_chart_png") or {}),
+        )
+        .mapvalues(argnames=["html_path"], argvalues=age_split_pie_chart_html)
     )
 
     choropleth_png = (
@@ -1672,7 +1822,8 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             iterables=[
                 grouped_events,
                 box_plot_png,
-                pie_chart_png,
+                gender_pie_chart_png,
+                age_pie_chart_png,
                 choropleth_png,
                 topic_location_pivot,
             ],
@@ -1749,9 +1900,10 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
                 total_participants_merged,
                 median_participants_merged,
                 box_plot_merged,
-                gender_pie_chart_merged,
+                gender_split_pie_chart_merged,
                 topic_bar_chart_merged,
                 choropleth_map_merged,
+                age_split_pie_chart_merged,
             ],
             time_range=time_range,
             groupers=groupers,
