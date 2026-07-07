@@ -7,11 +7,45 @@ rjsf-overrides:
         title: Adjudication / Camp / Chiefdom
 
   uiSchema:
+    "ui:order":
+      - workflow_details
+      - er_client
+      - base_maps
+      - time_range
+      - groupers
+      - events
+      - Choropleth Setting
+      - events_scatter_layer
+      - choropleth_count_layer
+      - Choropleth Resolution
+      - choropleth_png
+      - Community Report
+
     groupers.groupers.items.anyOf:
       - ui:options:
           label: false
       - ui:options:
           label: false
+
+    events_scatter_layer.layer_style:
+      ui:options:
+        label: false
+
+    choropleth_count_layer.layer_style:
+      ui:options:
+        label: false
+
+    choropleth_png.config:
+      ui:options:
+        label: false
+
+    Choropleth Resolution.choropleth_resolution_width:
+      ui:options:
+        label: false
+
+    Choropleth Resolution.choropleth_resolution_height:
+      ui:options:
+        label: false
 
   properties:
     groupers.properties.groupers.items.anyOf:
@@ -27,13 +61,55 @@ rjsf-overrides:
 
     Community Report.properties.generate_report.properties.template_path.default: "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
 
-    Choropleth Map.properties.choropleth_colormap.properties.max_classes.default: 5
-    Choropleth Map.properties.choropleth_colormap.properties.max_classes.description: "Maximum number of colour classes for the choropleth (Natural Breaks). Automatically reduced if fewer unique values exist in the data."
+    Choropleth Resolution.ecoscope:advanced: true
 
-    Choropleth Map.properties.choropleth_colormap.properties.colormap_min.default: 0.15
-    Choropleth Map.properties.choropleth_colormap.properties.colormap_max.default: 0.72
-    Choropleth Map.properties.choropleth_colormap.properties.colormap.default: Blues
-    Choropleth Map.properties.choropleth_colormap.properties.colormap.oneOf:
+    Choropleth Resolution.properties.choropleth_resolution_width.properties.var.title: Width
+    Choropleth Resolution.properties.choropleth_resolution_width.properties.var.default: 2560
+    Choropleth Resolution.properties.choropleth_resolution_width.properties.var.description: "Width of the map's viewport, in pixels."
+
+    Choropleth Resolution.properties.choropleth_resolution_height.properties.var.title: Height
+    Choropleth Resolution.properties.choropleth_resolution_height.properties.var.default: 1440
+    Choropleth Resolution.properties.choropleth_resolution_height.properties.var.description: "Height of the map's viewport, in pixels."
+
+    choropleth_png.title: Screenshot Setting
+    choropleth_png.properties.config.properties.device_scale_factor.type: number
+    choropleth_png.properties.config.properties.device_scale_factor.title: Scale Factor
+    choropleth_png.properties.config.properties.device_scale_factor.default: 2.0
+    choropleth_png.properties.config.properties.device_scale_factor.description: "Rendering scale factor for the screenshot. Higher values produce a sharper image."
+    choropleth_png.properties.config.properties.wait_for_timeout.type: integer
+    choropleth_png.properties.config.properties.wait_for_timeout.title: Wait Time (ms)
+    choropleth_png.properties.config.properties.wait_for_timeout.default: 30000
+    choropleth_png.properties.config.properties.wait_for_timeout.description: "Forced wait time (ms) after network idle before taking the screenshot."
+
+    choropleth_png.properties.config.ecoscope:advanced: true
+
+    events_scatter_layer.title: Event Layer
+    events_scatter_layer.properties.layer_style.properties.radius_min_pixels.type: number
+    events_scatter_layer.properties.layer_style.properties.radius_min_pixels.title: Min Radius
+    events_scatter_layer.properties.layer_style.properties.radius_min_pixels.default: 5
+    events_scatter_layer.properties.layer_style.properties.radius_min_pixels.description: "Minimum marker radius in pixels."
+
+    events_scatter_layer.properties.layer_style.properties.radius_max_pixels.type: number
+    events_scatter_layer.properties.layer_style.properties.radius_max_pixels.title: Max Radius
+    events_scatter_layer.properties.layer_style.properties.radius_max_pixels.default: 8
+    events_scatter_layer.properties.layer_style.properties.radius_max_pixels.description: "Maximum marker radius in pixels."
+
+    events_scatter_layer.properties.layer_style.ecoscope:advanced: true
+
+    choropleth_count_layer.title: Count Layer
+    choropleth_count_layer.properties.layer_style.properties.get_size.type: number
+    choropleth_count_layer.properties.layer_style.properties.get_size.title: Text Size
+    choropleth_count_layer.properties.layer_style.properties.get_size.default: 12
+    choropleth_count_layer.properties.layer_style.properties.get_size.description: "Font size of the meeting count labels, in pixels."
+    choropleth_count_layer.properties.layer_style.ecoscope:advanced: true
+
+    Choropleth Setting.properties.choropleth_colormap.properties.max_classes.default: 5
+    Choropleth Setting.properties.choropleth_colormap.properties.max_classes.description: "Maximum number of colour classes for the choropleth (Natural Breaks). Automatically reduced if fewer unique values exist in the data."
+
+    Choropleth Setting.properties.choropleth_colormap.properties.colormap_min.default: 0.15
+    Choropleth Setting.properties.choropleth_colormap.properties.colormap_max.default: 0.72
+    Choropleth Setting.properties.choropleth_colormap.properties.colormap.default: Blues
+    Choropleth Setting.properties.choropleth_colormap.properties.colormap.oneOf:
       - const: Blues
         title: Blues
       - const: Greens
@@ -90,7 +166,7 @@ requirements:
     version: 0.9.2
     channel: conda-forge
   - name: ecoscope-workflows-ext-eden
-    version: "0.0.5"
+    version: "0.0.6"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 
 task-instance-defaults:
@@ -653,28 +729,58 @@ workflow:
 
   # --- Choropleth Map ---
 
-  - title: Choropleth Map
+  - name: Choropleth Groupers
+    id: choropleth_groupers
+    task: exclude_groupers
+    partial:
+      groupers: ${{ workflow.groupers.return }}
+      exclude:
+        - meeting_location_level_one
+
+  - name: Split Choropleth Events
+    id: choropleth_events
+    task: split_groups
+    partial:
+      df: ${{ workflow.events_with_temporal_index.return }}
+      groupers: ${{ workflow.choropleth_groupers.return }}
+
+  - name: Slim Event Points for Scatter
+    id: choropleth_event_points
+    task: select_columns
+    partial:
+      columns:
+        - serial_number
+        - state
+        - geometry
+      raise_on_missing: false
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.choropleth_events.return }}
+
+  - name: Event Layer
+    id: events_scatter_layer
+    task: ecoscope.platform.tasks.results.create_scatterplot_layer
+    partial:
+      data_url: null
+      layer_style:
+        get_fill_color: [255, 140, 0, 200]
+        opacity: 0.8
+        stroked: true
+        get_line_color: [255, 255, 255, 180]
+        line_width_min_pixels: 1
+      legend: null
+      tooltip_columns: ["serial_number", "state"]
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.choropleth_event_points.return }}
+
+  - title: Choropleth Setting
     type: task-group
     description: Number of meetings per location polygon (e.g. adjudication areas, chiefdoms, forest clusters).
     tasks:
       - name: Load Adjudication Polygons
         id: adjudication_polygons
         task: load_adjudication_polygons
-
-      - name: Choropleth Groupers
-        id: choropleth_groupers
-        task: exclude_groupers
-        partial:
-          groupers: ${{ workflow.groupers.return }}
-          exclude:
-            - meeting_location_level_one
-
-      - name: Split Choropleth Events
-        id: choropleth_events
-        task: split_groups
-        partial:
-          df: ${{ workflow.events_with_temporal_index.return }}
-          groupers: ${{ workflow.choropleth_groupers.return }}
 
       - name: Join Meeting Counts to Polygons
         id: choropleth_joined
@@ -697,27 +803,6 @@ workflow:
         mapvalues:
           argnames: df
           argvalues: ${{ workflow.choropleth_joined.return }}
-
-      - name: Prepare Meeting Count Labels
-        id: choropleth_count_labels
-        task: prepare_count_labels
-        partial:
-          count_column: meeting_count
-          label_column: label
-          suffix: " meetings"
-        mapvalues:
-          argnames: df
-          argvalues: ${{ workflow.choropleth_colormap.return }}
-
-      - name: Prepare Polygon Name Labels
-        id: choropleth_name_labels
-        task: prepare_polygon_labels
-        partial:
-          name_column: Name
-          label_column: label
-        mapvalues:
-          argnames: df
-          argvalues: ${{ workflow.choropleth_colormap.return }}
 
       - name: Prepare Missing Location Events
         id: missing_location_events
@@ -750,72 +835,6 @@ workflow:
         mapvalues:
           argnames: geodataframe
           argvalues: ${{ workflow.choropleth_colormap.return }}
-
-      - name: Slim Event Points for Scatter
-        id: choropleth_event_points
-        task: select_columns
-        partial:
-          columns:
-            - serial_number
-            - state
-            - geometry
-          raise_on_missing: false
-        mapvalues:
-          argnames: df
-          argvalues: ${{ workflow.choropleth_events.return }}
-
-      - name: Create Event Locations Scatter Layer
-        id: events_scatter_layer
-        task: ecoscope.platform.tasks.results.create_scatterplot_layer
-        partial:
-          data_url: null
-          layer_style:
-            get_fill_color: [255, 140, 0, 200]
-            radius_min_pixels: 5
-            radius_max_pixels: 8
-            opacity: 0.8
-            stroked: true
-            get_line_color: [255, 255, 255, 180]
-            line_width_min_pixels: 1
-          legend: null
-          tooltip_columns: ["serial_number", "state"]
-        mapvalues:
-          argnames: geodataframe
-          argvalues: ${{ workflow.choropleth_event_points.return }}
-
-      - name: Create Polygon Name Label Layer
-        id: choropleth_name_layer
-        task: ecoscope.platform.tasks.results.create_text_layer_pydeck
-        partial:
-          data_url: null
-          legend: null
-          layer_style:
-            get_text: label
-            get_size: 10
-            get_color: [40, 40, 40, 230]
-            background: false
-            get_pixel_offset: [0, -10]
-          tooltip_columns: null
-        mapvalues:
-          argnames: geodataframe
-          argvalues: ${{ workflow.choropleth_name_labels.return }}
-
-      - name: Create Meeting Count Label Layer
-        id: choropleth_count_layer
-        task: ecoscope.platform.tasks.results.create_text_layer_pydeck
-        partial:
-          data_url: null
-          legend: null
-          layer_style:
-            get_text: label
-            get_size: 10
-            get_color: [40, 40, 40, 230]
-            background: false
-            get_pixel_offset: [0, 10]
-          tooltip_columns: null
-        mapvalues:
-          argnames: geodataframe
-          argvalues: ${{ workflow.choropleth_count_labels.return }}
 
       - name: Create Missing Location Scatter Layer
         id: missing_scatter_layer
@@ -853,89 +872,190 @@ workflow:
           argnames: geodataframe
           argvalues: ${{ workflow.missing_location_events.return }}
 
-      - name: Combine All Choropleth Layers
-        id: choropleth_geo_layers
-        task: groupbykey
-        partial:
-          iterables:
-            - ${{ workflow.choropleth_layer.return }}
-            - ${{ workflow.events_scatter_layer.return }}
-            - ${{ workflow.choropleth_name_layer.return }}
-            - ${{ workflow.choropleth_count_layer.return }}
-            - ${{ workflow.missing_scatter_layer.return }}
-            - ${{ workflow.missing_label_layer.return }}
+  # --- Choropleth Map (ungrouped, independent tasks) ---
 
-      - name: Choropleth View State
-        id: choropleth_view_state
-        task: create_viewstate_gdf
-        partial:
-          gdf: ${{ workflow.adjudication_polygons.return }}
-          padding: 0.2
-          viewport_width: 1280
-          viewport_height: 720
+  - name: Prepare Polygon Name Labels
+    id: choropleth_name_labels
+    task: prepare_polygon_labels
+    partial:
+      name_column: Name
+      label_column: label
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.choropleth_colormap.return }}
 
-      - name: Draw Choropleth Map
-        id: choropleth_map
-        task: ecoscope.platform.tasks.results.draw_map
-        partial:
-          static: false
-          title: null
-          tile_layers: ${{ workflow.base_maps.return }}
-          max_zoom: 20
-          view_state: ${{ workflow.choropleth_view_state.return }}
-          legend_style:
-            placement: bottom-right
-          output_type: html
-        mapvalues:
-          argnames: geo_layers
-          argvalues: ${{ workflow.choropleth_geo_layers.return }}
+  - name: TextLayer
+    id: choropleth_name_layer
+    task: ecoscope.platform.tasks.results.create_text_layer_pydeck
+    partial:
+      data_url: null
+      legend: null
+      layer_style:
+        get_text: label
+        get_size: 10
+        get_color: [40, 40, 40, 230]
+        background: false
+        get_pixel_offset: [0, -10]
+      tooltip_columns: null
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.choropleth_name_labels.return }}
 
-      - name: Persist Choropleth Map
-        id: choropleth_map_html
-        task: persist_text
-        partial:
-          root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-          filename_suffix: choropleth_map
-        mapvalues:
-          argnames: text
-          argvalues: ${{ workflow.choropleth_map.return }}
+  - name: Prepare Meeting Count Labels
+    id: choropleth_count_labels
+    task: prepare_count_labels
+    partial:
+      count_column: meeting_count
+      label_column: label
+      suffix: " meetings"
+    mapvalues:
+      argnames: df
+      argvalues: ${{ workflow.choropleth_colormap.return }}
 
-      - name: Expand Choropleth to All Group Keys
-        id: choropleth_map_html_expanded
-        task: expand_to_composite_keys
-        skipif:
-          conditions:
-            - any_is_empty_df
-        partial:
-          keyed_values: ${{ workflow.choropleth_map_html.return }}
-          reference: ${{ workflow.grouped_events.return }}
+  - name: Count Layer
+    id: choropleth_count_layer
+    task: ecoscope.platform.tasks.results.create_text_layer_pydeck
+    partial:
+      data_url: null
+      legend: null
+      layer_style:
+        get_text: label
+        get_color: [40, 40, 40, 230]
+        background: false
+        get_pixel_offset: [0, 10]
+      tooltip_columns: null
+    mapvalues:
+      argnames: geodataframe
+      argvalues: ${{ workflow.choropleth_count_labels.return }}
 
-      - name: Choropleth Map Widget
-        id: choropleth_map_widget
-        task: create_map_widget_single_view
-        skipif:
-          conditions:
-            - never
-        partial:
-          title: "Meetings per Adjudication"
-        map:
-          argnames: [view, data]
-          argvalues: ${{ workflow.choropleth_map_html_expanded.return }}
+  - name: Combine All Choropleth Layers
+    id: choropleth_geo_layers
+    task: groupbykey
+    partial:
+      iterables:
+        - ${{ workflow.choropleth_layer.return }}
+        - ${{ workflow.events_scatter_layer.return }}
+        - ${{ workflow.choropleth_name_layer.return }}
+        - ${{ workflow.choropleth_count_layer.return }}
+        - ${{ workflow.missing_scatter_layer.return }}
+        - ${{ workflow.missing_label_layer.return }}
 
-      - name: Choropleth Map Merged
-        id: choropleth_map_merged
-        task: merge_widget_views
-        skipif:
-          conditions:
-            - never
-        partial:
-          widgets: ${{ workflow.choropleth_map_widget.return }}
+  - title: Choropleth Resolution
+    type: task-group
+    description: Controls how sharp and detailed the choropleth map image is.
+    tasks:
+      - name: Width
+        id: choropleth_resolution_width
+        task: set_int_var
+
+      - name: Height
+        id: choropleth_resolution_height
+        task: set_int_var
+
+  - name: Choropleth View State
+    id: choropleth_view_state
+    task: create_viewstate_gdf
+    partial:
+      gdf: ${{ workflow.adjudication_polygons.return }}
+      padding: 0.2
+      viewport_width: ${{ workflow.choropleth_resolution_width.return }}
+      viewport_height: ${{ workflow.choropleth_resolution_height.return }}
+
+  - name: Draw Choropleth Map
+    id: choropleth_map
+    task: ecoscope.platform.tasks.results.draw_map
+    partial:
+      static: false
+      title: null
+      tile_layers: ${{ workflow.base_maps.return }}
+      max_zoom: 20
+      view_state: ${{ workflow.choropleth_view_state.return }}
+      legend_style:
+        placement: bottom-right
+      output_type: html
+    mapvalues:
+      argnames: geo_layers
+      argvalues: ${{ workflow.choropleth_geo_layers.return }}
+
+  - name: Fix Deck.gl Device Pixel Ratio
+    id: choropleth_map_fixed
+    task: fix_deck_device_pixel_ratio
+    mapvalues:
+      argnames: html
+      argvalues: ${{ workflow.choropleth_map.return }}
+
+  - name: Fix Choropleth Viewport
+    id: choropleth_viewport_fixed
+    task: fix_choropleth_viewport
+    partial:
+      gdf: ${{ workflow.adjudication_polygons.return }}
+      padding: 0.2
+    mapvalues:
+      argnames: html
+      argvalues: ${{ workflow.choropleth_map_fixed.return }}
+
+  - name: Persist Choropleth Map
+    id: choropleth_map_html
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+      filename_suffix: choropleth_map
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.choropleth_viewport_fixed.return }}
+
+  - name: Expand Choropleth to All Group Keys
+    id: choropleth_map_html_expanded
+    task: expand_to_composite_keys
+    skipif:
+      conditions:
+        - any_is_empty_df
+    partial:
+      keyed_values: ${{ workflow.choropleth_map_html.return }}
+      reference: ${{ workflow.grouped_events.return }}
+
+  - name: Choropleth Map Widget
+    id: choropleth_map_widget
+    task: create_map_widget_single_view
+    skipif:
+      conditions:
+        - never
+    partial:
+      title: "Meetings per Adjudication"
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.choropleth_map_html_expanded.return }}
+
+  - name: Choropleth Map Merged
+    id: choropleth_map_merged
+    task: merge_widget_views
+    skipif:
+      conditions:
+        - never
+    partial:
+      widgets: ${{ workflow.choropleth_map_widget.return }}
+
+  - name: Choropleth Map Screenshot
+    id: choropleth_png
+    task: html_to_png
+    partial:
+      output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+      config:
+        width: ${{ workflow.choropleth_resolution_width.return }}
+        height: ${{ workflow.choropleth_resolution_height.return }}
+        full_page: false
+        timeout: 0
+        max_concurrent_pages: 5
+        serve_local_files: false
+    mapvalues:
+      argnames: html_path
+      argvalues: ${{ workflow.choropleth_map_html_expanded.return }}
 
   # --- DOCX Report ---
 
   - title: Community Report
     type: task-group
-    description: Per-group community engagement report (one .docx per grouper combination).
+    description: Generates the community engagement report as a Word document, one per group.
     tasks:
       - name: Box Plot PNG
         id: box_plot_png
@@ -969,17 +1089,6 @@ workflow:
         mapvalues:
           argnames: html_path
           argvalues: ${{ workflow.age_split_pie_chart_html.return }}
-
-      - name: Choropleth PNG
-        id: choropleth_png
-        task: html_to_png
-        partial:
-          output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-          config:
-            full_page: false
-        mapvalues:
-          argnames: html_path
-          argvalues: ${{ workflow.choropleth_map_html_expanded.return }}
 
       - name: Bundle Report Inputs
         id: report_inputs

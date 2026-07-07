@@ -86,6 +86,12 @@ from ecoscope_workflows_ext_eden.tasks import (
     expand_to_composite_keys as expand_to_composite_keys,
 )
 from ecoscope_workflows_ext_eden.tasks import (
+    fix_choropleth_viewport as fix_choropleth_viewport,
+)
+from ecoscope_workflows_ext_eden.tasks import (
+    fix_deck_device_pixel_ratio as fix_deck_device_pixel_ratio,
+)
+from ecoscope_workflows_ext_eden.tasks import (
     generate_community_report as generate_community_report,
 )
 from ecoscope_workflows_ext_eden.tasks import get_er_site_url as get_er_site_url
@@ -108,6 +114,7 @@ from ecoscope_workflows_ext_eden.tasks import (
 from ecoscope_workflows_ext_eden.tasks import (
     prepare_polygon_labels as prepare_polygon_labels,
 )
+from ecoscope_workflows_ext_eden.tasks import set_int_var as set_int_var
 from wt_contracts import validate as _validate
 from wt_task import task
 
@@ -1174,23 +1181,6 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .mapvalues(argnames=["df"], argvalues=grouped_events)
     )
 
-    adjudication_polygons = (
-        task(load_adjudication_polygons)
-        .validate()
-        .set_task_instance_id("adjudication_polygons")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(**(params.get("adjudication_polygons") or {}))
-        .call()
-    )
-
     choropleth_groupers = (
         task(exclude_groupers)
         .validate()
@@ -1230,6 +1220,73 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             groupers=choropleth_groupers,
             **(params.get("choropleth_events") or {}),
         )
+        .call()
+    )
+
+    choropleth_event_points = (
+        task(select_columns)
+        .validate()
+        .set_task_instance_id("choropleth_event_points")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            columns=["serial_number", "state", "geometry"],
+            raise_on_missing=False,
+            **(params.get("choropleth_event_points") or {}),
+        )
+        .mapvalues(argnames=["df"], argvalues=choropleth_events)
+    )
+
+    events_scatter_layer = (
+        task(create_scatterplot_layer)
+        .validate()
+        .set_task_instance_id("events_scatter_layer")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            data_url=None,
+            layer_style={
+                "get_fill_color": [255, 140, 0, 200],
+                "opacity": 0.8,
+                "stroked": True,
+                "get_line_color": [255, 255, 255, 180],
+                "line_width_min_pixels": 1,
+            },
+            legend=None,
+            tooltip_columns=["serial_number", "state"],
+            **(params.get("events_scatter_layer") or {}),
+        )
+        .mapvalues(argnames=["geodataframe"], argvalues=choropleth_event_points)
+    )
+
+    adjudication_polygons = (
+        task(load_adjudication_polygons)
+        .validate()
+        .set_task_instance_id("adjudication_polygons")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(**(params.get("adjudication_polygons") or {}))
         .call()
     )
 
@@ -1276,49 +1333,6 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             **(params.get("choropleth_colormap") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=choropleth_joined)
-    )
-
-    choropleth_count_labels = (
-        task(prepare_count_labels)
-        .validate()
-        .set_task_instance_id("choropleth_count_labels")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(
-            count_column="meeting_count",
-            label_column="label",
-            suffix=" meetings",
-            **(params.get("choropleth_count_labels") or {}),
-        )
-        .mapvalues(argnames=["df"], argvalues=choropleth_colormap)
-    )
-
-    choropleth_name_labels = (
-        task(prepare_polygon_labels)
-        .validate()
-        .set_task_instance_id("choropleth_name_labels")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(
-            name_column="Name",
-            label_column="label",
-            **(params.get("choropleth_name_labels") or {}),
-        )
-        .mapvalues(argnames=["df"], argvalues=choropleth_colormap)
     )
 
     missing_location_events = (
@@ -1375,116 +1389,6 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             **(params.get("choropleth_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_colormap)
-    )
-
-    choropleth_event_points = (
-        task(select_columns)
-        .validate()
-        .set_task_instance_id("choropleth_event_points")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(
-            columns=["serial_number", "state", "geometry"],
-            raise_on_missing=False,
-            **(params.get("choropleth_event_points") or {}),
-        )
-        .mapvalues(argnames=["df"], argvalues=choropleth_events)
-    )
-
-    events_scatter_layer = (
-        task(create_scatterplot_layer)
-        .validate()
-        .set_task_instance_id("events_scatter_layer")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(
-            data_url=None,
-            layer_style={
-                "get_fill_color": [255, 140, 0, 200],
-                "radius_min_pixels": 5,
-                "radius_max_pixels": 8,
-                "opacity": 0.8,
-                "stroked": True,
-                "get_line_color": [255, 255, 255, 180],
-                "line_width_min_pixels": 1,
-            },
-            legend=None,
-            tooltip_columns=["serial_number", "state"],
-            **(params.get("events_scatter_layer") or {}),
-        )
-        .mapvalues(argnames=["geodataframe"], argvalues=choropleth_event_points)
-    )
-
-    choropleth_name_layer = (
-        task(create_text_layer_pydeck)
-        .validate()
-        .set_task_instance_id("choropleth_name_layer")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(
-            data_url=None,
-            legend=None,
-            layer_style={
-                "get_text": "label",
-                "get_size": 10,
-                "get_color": [40, 40, 40, 230],
-                "background": False,
-                "get_pixel_offset": [0, -10],
-            },
-            tooltip_columns=None,
-            **(params.get("choropleth_name_layer") or {}),
-        )
-        .mapvalues(argnames=["geodataframe"], argvalues=choropleth_name_labels)
-    )
-
-    choropleth_count_layer = (
-        task(create_text_layer_pydeck)
-        .validate()
-        .set_task_instance_id("choropleth_count_layer")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(
-            data_url=None,
-            legend=None,
-            layer_style={
-                "get_text": "label",
-                "get_size": 10,
-                "get_color": [40, 40, 40, 230],
-                "background": False,
-                "get_pixel_offset": [0, 10],
-            },
-            tooltip_columns=None,
-            **(params.get("choropleth_count_layer") or {}),
-        )
-        .mapvalues(argnames=["geodataframe"], argvalues=choropleth_count_labels)
     )
 
     missing_scatter_layer = (
@@ -1547,6 +1451,106 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .mapvalues(argnames=["geodataframe"], argvalues=missing_location_events)
     )
 
+    choropleth_name_labels = (
+        task(prepare_polygon_labels)
+        .validate()
+        .set_task_instance_id("choropleth_name_labels")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            name_column="Name",
+            label_column="label",
+            **(params.get("choropleth_name_labels") or {}),
+        )
+        .mapvalues(argnames=["df"], argvalues=choropleth_colormap)
+    )
+
+    choropleth_name_layer = (
+        task(create_text_layer_pydeck)
+        .validate()
+        .set_task_instance_id("choropleth_name_layer")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            data_url=None,
+            legend=None,
+            layer_style={
+                "get_text": "label",
+                "get_size": 10,
+                "get_color": [40, 40, 40, 230],
+                "background": False,
+                "get_pixel_offset": [0, -10],
+            },
+            tooltip_columns=None,
+            **(params.get("choropleth_name_layer") or {}),
+        )
+        .mapvalues(argnames=["geodataframe"], argvalues=choropleth_name_labels)
+    )
+
+    choropleth_count_labels = (
+        task(prepare_count_labels)
+        .validate()
+        .set_task_instance_id("choropleth_count_labels")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            count_column="meeting_count",
+            label_column="label",
+            suffix=" meetings",
+            **(params.get("choropleth_count_labels") or {}),
+        )
+        .mapvalues(argnames=["df"], argvalues=choropleth_colormap)
+    )
+
+    choropleth_count_layer = (
+        task(create_text_layer_pydeck)
+        .validate()
+        .set_task_instance_id("choropleth_count_layer")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            data_url=None,
+            legend=None,
+            layer_style={
+                "get_text": "label",
+                "get_color": [40, 40, 40, 230],
+                "background": False,
+                "get_pixel_offset": [0, 10],
+            },
+            tooltip_columns=None,
+            **(params.get("choropleth_count_layer") or {}),
+        )
+        .mapvalues(argnames=["geodataframe"], argvalues=choropleth_count_labels)
+    )
+
     choropleth_geo_layers = (
         task(groupbykey)
         .validate()
@@ -1574,6 +1578,40 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .call()
     )
 
+    choropleth_resolution_width = (
+        task(set_int_var)
+        .validate()
+        .set_task_instance_id("choropleth_resolution_width")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(**(params.get("choropleth_resolution_width") or {}))
+        .call()
+    )
+
+    choropleth_resolution_height = (
+        task(set_int_var)
+        .validate()
+        .set_task_instance_id("choropleth_resolution_height")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(**(params.get("choropleth_resolution_height") or {}))
+        .call()
+    )
+
     choropleth_view_state = (
         task(create_viewstate_gdf)
         .validate()
@@ -1590,8 +1628,8 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .partial(
             gdf=adjudication_polygons,
             padding=0.2,
-            viewport_width=1280,
-            viewport_height=720,
+            viewport_width=choropleth_resolution_width,
+            viewport_height=choropleth_resolution_height,
             **(params.get("choropleth_view_state") or {}),
         )
         .call()
@@ -1623,6 +1661,44 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .mapvalues(argnames=["geo_layers"], argvalues=choropleth_geo_layers)
     )
 
+    choropleth_map_fixed = (
+        task(fix_deck_device_pixel_ratio)
+        .validate()
+        .set_task_instance_id("choropleth_map_fixed")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(**(params.get("choropleth_map_fixed") or {}))
+        .mapvalues(argnames=["html"], argvalues=choropleth_map)
+    )
+
+    choropleth_viewport_fixed = (
+        task(fix_choropleth_viewport)
+        .validate()
+        .set_task_instance_id("choropleth_viewport_fixed")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            gdf=adjudication_polygons,
+            padding=0.2,
+            **(params.get("choropleth_viewport_fixed") or {}),
+        )
+        .mapvalues(argnames=["html"], argvalues=choropleth_map_fixed)
+    )
+
     choropleth_map_html = (
         task(persist_text)
         .validate()
@@ -1641,7 +1717,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             filename_suffix="choropleth_map",
             **(params.get("choropleth_map_html") or {}),
         )
-        .mapvalues(argnames=["text"], argvalues=choropleth_map)
+        .mapvalues(argnames=["text"], argvalues=choropleth_viewport_fixed)
     )
 
     choropleth_map_html_expanded = (
@@ -1699,6 +1775,34 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             widgets=choropleth_map_widget, **(params.get("choropleth_map_merged") or {})
         )
         .call()
+    )
+
+    choropleth_png = (
+        task(html_to_png)
+        .validate()
+        .set_task_instance_id("choropleth_png")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            config={
+                "width": choropleth_resolution_width,
+                "height": choropleth_resolution_height,
+                "full_page": False,
+                "timeout": 0,
+                "max_concurrent_pages": 5,
+                "serve_local_files": False,
+            },
+            **(params.get("choropleth_png") or {}),
+        )
+        .mapvalues(argnames=["html_path"], argvalues=choropleth_map_html_expanded)
     )
 
     box_plot_png = (
@@ -1762,27 +1866,6 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             **(params.get("age_pie_chart_png") or {}),
         )
         .mapvalues(argnames=["html_path"], argvalues=age_split_pie_chart_html)
-    )
-
-    choropleth_png = (
-        task(html_to_png)
-        .validate()
-        .set_task_instance_id("choropleth_png")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(
-            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            config={"full_page": False},
-            **(params.get("choropleth_png") or {}),
-        )
-        .mapvalues(argnames=["html_path"], argvalues=choropleth_map_html_expanded)
     )
 
     report_inputs = (

@@ -350,6 +350,34 @@
       "type": "object",
       "title": ""
     },
+    "choropleth_resolution_width": {
+      "additionalProperties": false,
+      "properties": {
+        "var": {
+          "title": "",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "var"
+      ],
+      "type": "object",
+      "title": "Width"
+    },
+    "choropleth_resolution_height": {
+      "additionalProperties": false,
+      "properties": {
+        "var": {
+          "title": "",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "var"
+      ],
+      "type": "object",
+      "title": "Height"
+    },
     "generate_report": {
       "additionalProperties": false,
       "properties": {
@@ -526,6 +554,8 @@
       "groupers",
       "events",
       "choropleth_colormap",
+      "choropleth_resolution_width",
+      "choropleth_resolution_height",
       "generate_report"
     ]
   },

@@ -318,7 +318,7 @@
       "type": "object",
       "title": "Get Community Engagement Events"
     },
-    "Choropleth Map": {
+    "Choropleth Setting": {
       "type": "object",
       "description": "Number of meetings per location polygon (e.g. adjudication areas, chiefdoms, forest clusters).",
       "ecoscope:task_group": true,
@@ -451,9 +451,49 @@
         }
       }
     },
+    "Choropleth Resolution": {
+      "type": "object",
+      "description": "Controls how sharp and detailed the choropleth map image is.",
+      "ecoscope:task_group": true,
+      "properties": {
+        "choropleth_resolution_width": {
+          "additionalProperties": false,
+          "properties": {
+            "var": {
+              "title": "Width",
+              "type": "integer",
+              "default": 2560,
+              "description": "Width of the map's viewport, in pixels."
+            }
+          },
+          "required": [
+            "var"
+          ],
+          "type": "object",
+          "title": "Width"
+        },
+        "choropleth_resolution_height": {
+          "additionalProperties": false,
+          "properties": {
+            "var": {
+              "title": "Height",
+              "type": "integer",
+              "default": 1440,
+              "description": "Height of the map's viewport, in pixels."
+            }
+          },
+          "required": [
+            "var"
+          ],
+          "type": "object",
+          "title": "Height"
+        }
+      },
+      "ecoscope:advanced": true
+    },
     "Community Report": {
       "type": "object",
-      "description": "Per-group community engagement report (one .docx per grouper combination).",
+      "description": "Generates the community engagement report as a Word document, one per group.",
       "ecoscope:task_group": true,
       "properties": {
         "generate_report": {
@@ -471,6 +511,66 @@
           ],
           "type": "object",
           "title": ""
+        }
+      }
+    },
+    "choropleth_png": {
+      "title": "Screenshot Setting",
+      "properties": {
+        "config": {
+          "properties": {
+            "device_scale_factor": {
+              "type": "number",
+              "title": "Scale Factor",
+              "default": 2.0,
+              "description": "Rendering scale factor for the screenshot. Higher values produce a sharper image."
+            },
+            "wait_for_timeout": {
+              "type": "integer",
+              "title": "Wait Time (ms)",
+              "default": 30000,
+              "description": "Forced wait time (ms) after network idle before taking the screenshot."
+            }
+          },
+          "ecoscope:advanced": true
+        }
+      }
+    },
+    "events_scatter_layer": {
+      "title": "Event Layer",
+      "properties": {
+        "layer_style": {
+          "properties": {
+            "radius_min_pixels": {
+              "type": "number",
+              "title": "Min Radius",
+              "default": 5,
+              "description": "Minimum marker radius in pixels."
+            },
+            "radius_max_pixels": {
+              "type": "number",
+              "title": "Max Radius",
+              "default": 8,
+              "description": "Maximum marker radius in pixels."
+            }
+          },
+          "ecoscope:advanced": true
+        }
+      }
+    },
+    "choropleth_count_layer": {
+      "title": "Count Layer",
+      "properties": {
+        "layer_style": {
+          "properties": {
+            "get_size": {
+              "type": "number",
+              "title": "Text Size",
+              "default": 12,
+              "description": "Font size of the meeting count labels, in pixels."
+            }
+          },
+          "ecoscope:advanced": true
         }
       }
     }
@@ -625,7 +725,7 @@
         "force_point_geometry"
       ]
     },
-    "Choropleth Map": {
+    "Choropleth Setting": {
       "choropleth_colormap": {
         "ui:order": [
           "colormap",
@@ -635,6 +735,22 @@
         ]
       }
     },
+    "Choropleth Resolution": {
+      "ui:order": [
+        "choropleth_resolution_width",
+        "choropleth_resolution_height"
+      ],
+      "choropleth_resolution_width": {
+        "ui:options": {
+          "label": false
+        }
+      },
+      "choropleth_resolution_height": {
+        "ui:options": {
+          "label": false
+        }
+      }
+    },
     "ui:order": [
       "workflow_details",
       "er_client",
@@ -642,7 +758,11 @@
       "time_range",
       "groupers",
       "events",
-      "Choropleth Map",
+      "Choropleth Setting",
+      "events_scatter_layer",
+      "choropleth_count_layer",
+      "Choropleth Resolution",
+      "choropleth_png",
       "Community Report"
     ],
     "groupers": {
@@ -660,6 +780,27 @@
               }
             }
           ]
+        }
+      }
+    },
+    "events_scatter_layer": {
+      "layer_style": {
+        "ui:options": {
+          "label": false
+        }
+      }
+    },
+    "choropleth_count_layer": {
+      "layer_style": {
+        "ui:options": {
+          "label": false
+        }
+      }
+    },
+    "choropleth_png": {
+      "config": {
+        "ui:options": {
+          "label": false
         }
       }
     }
