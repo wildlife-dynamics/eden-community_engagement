@@ -318,6 +318,23 @@
       "type": "object",
       "title": "Get Community Engagement Events"
     },
+    "event_radius": {
+      "additionalProperties": false,
+      "properties": {
+        "var": {
+          "title": "Radius",
+          "type": "integer",
+          "default": 5,
+          "description": "Size of each event marker, in pixels.",
+          "ecoscope:advanced": true
+        }
+      },
+      "required": [
+        "var"
+      ],
+      "type": "object",
+      "title": "Event Marker Size"
+    },
     "Choropleth Setting": {
       "type": "object",
       "description": "Number of meetings per location polygon (e.g. adjudication areas, chiefdoms, forest clusters).",
@@ -451,117 +468,22 @@
         }
       }
     },
-    "choropleth_count_layer": {
+    "text_layer_size": {
       "additionalProperties": false,
       "properties": {
-        "layer_style": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/TextLayerStyle"
-            }
-          ],
-          "default": {
-            "auto_highlight": false,
-            "opacity": 1,
-            "pickable": true,
-            "get_position": "geometry.coordinates",
-            "get_text": "label",
-            "get_color": null,
-            "get_background_color": null,
-            "get_border_color": null,
-            "get_border_width": null,
-            "get_size": 12,
-            "get_angle": null,
-            "background_border_radius": null,
-            "background_padding": null,
-            "billboard": false,
-            "background": false,
-            "size_scale": 1,
-            "size_units": "pixels",
-            "size_min_pixels": 0,
-            "size_max_pixels": null,
-            "font_family": "Monaco, monospace",
-            "font_weight": null,
-            "line_height": null,
-            "outline_width": null,
-            "outline_color": null,
-            "word_break": "break-word",
-            "max_width": null,
-            "get_text_anchor": "middle",
-            "get_alignment_baseline": "center",
-            "get_pixel_offset": [
-              0,
-              10
-            ]
-          },
-          "title": "Layer Style",
-          "description": "Style arguments for the layer.",
-          "ecoscope:advanced": true,
-          "properties": {
-            "get_text": {
-              "type": "string",
-              "title": "Get Text",
-              "default": "label",
-              "description": "Column or expression providing the label text."
-            },
-            "background": {
-              "type": "boolean",
-              "title": "Background",
-              "default": false,
-              "description": "Draw a background box behind the text."
-            },
-            "get_pixel_offset": {
-              "type": "array",
-              "items": {
-                "type": "number"
-              },
-              "title": "Get Pixel Offset",
-              "default": [
-                0,
-                10
-              ],
-              "description": "Offset of the text label, in pixels, relative to its anchor point."
-            },
-            "get_size": {
-              "anyOf": [
-                {
-                  "type": "number",
-                  "default": 12,
-                  "title": "Get Size"
-                }
-              ],
-              "default": 12,
-              "title": "Get Size",
-              "description": "Font size of the meeting count labels, in pixels."
-            },
-            "auto_highlight": {
-              "type": "boolean",
-              "title": "Auto Highlight",
-              "default": false,
-              "description": "Enable automatic highlighting when hovering over a label."
-            },
-            "opacity": {
-              "type": "number",
-              "title": "Opacity",
-              "default": 1,
-              "description": "Transparency of the meeting count labels, from 0 (invisible) to 1 (fully opaque)."
-            },
-            "word_break": {
-              "type": "string",
-              "enum": [
-                "break-word",
-                "break-all"
-              ],
-              "title": "Word Break",
-              "default": "break-word",
-              "description": "How label text wraps when it exceeds Max Width."
-            }
-          }
+        "var": {
+          "title": "Text Layer Size",
+          "type": "integer",
+          "default": 12,
+          "description": "Font size of the choropleth text labels (polygon names and meeting counts), in pixels.",
+          "ecoscope:advanced": true
         }
       },
+      "required": [
+        "var"
+      ],
       "type": "object",
-      "required": [],
-      "title": "Count Layer"
+      "title": "Text Layer Size"
     },
     "choropleth_view_state": {
       "additionalProperties": false,
@@ -823,310 +745,6 @@
       "title": "Category",
       "type": "object"
     },
-    "TextLayerStyle": {
-      "description": "Text Layer style kwargs\nSee https://deck.gl/docs/api-reference/layers/text-layer for more info",
-      "properties": {
-        "auto_highlight": {
-          "default": false,
-          "ecoscope:advanced": true,
-          "title": "Auto Highlight",
-          "type": "boolean"
-        },
-        "opacity": {
-          "default": 1,
-          "ecoscope:advanced": true,
-          "maximum": 1.0,
-          "minimum": 0.0,
-          "title": "Opacity",
-          "type": "number"
-        },
-        "pickable": {
-          "default": true,
-          "ecoscope:advanced": true,
-          "title": "Pickable",
-          "type": "boolean"
-        },
-        "get_position": {
-          "default": "geometry.coordinates",
-          "ecoscope:advanced": true,
-          "title": "Get Position",
-          "type": "string"
-        },
-        "get_text": {
-          "default": "label",
-          "ecoscope:advanced": true,
-          "title": "Get Text",
-          "type": "string"
-        },
-        "get_color": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Get Color",
-          "type": "string"
-        },
-        "get_background_color": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Get Background Color",
-          "type": "string"
-        },
-        "get_border_color": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Get Border Color",
-          "type": "string"
-        },
-        "get_border_width": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Get Border Width"
-        },
-        "get_size": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "default": 12,
-          "ecoscope:advanced": true,
-          "title": "Get Size"
-        },
-        "get_angle": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Get Angle"
-        },
-        "background_border_radius": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "maxItems": 4,
-              "minItems": 4,
-              "prefixItems": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "number"
-                }
-              ],
-              "type": "array"
-            }
-          ],
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Background Border Radius"
-        },
-        "background_padding": {
-          "anyOf": [
-            {
-              "maxItems": 2,
-              "minItems": 2,
-              "prefixItems": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "number"
-                }
-              ],
-              "type": "array"
-            },
-            {
-              "maxItems": 4,
-              "minItems": 4,
-              "prefixItems": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "number"
-                }
-              ],
-              "type": "array"
-            }
-          ],
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Background Padding"
-        },
-        "billboard": {
-          "default": false,
-          "ecoscope:advanced": true,
-          "title": "Billboard",
-          "type": "boolean"
-        },
-        "background": {
-          "default": false,
-          "ecoscope:advanced": true,
-          "title": "Background",
-          "type": "boolean"
-        },
-        "size_scale": {
-          "default": 1,
-          "ecoscope:advanced": true,
-          "title": "Size Scale",
-          "type": "number"
-        },
-        "size_units": {
-          "default": "pixels",
-          "ecoscope:advanced": true,
-          "enum": [
-            "meters",
-            "pixels"
-          ],
-          "title": "Size Units",
-          "type": "string"
-        },
-        "size_min_pixels": {
-          "default": 0,
-          "ecoscope:advanced": true,
-          "title": "Size Min Pixels",
-          "type": "number"
-        },
-        "size_max_pixels": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Size Max Pixels",
-          "type": "number"
-        },
-        "font_family": {
-          "default": "Monaco, monospace",
-          "ecoscope:advanced": true,
-          "title": "Font Family",
-          "type": "string"
-        },
-        "font_weight": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Font Weight",
-          "type": "string"
-        },
-        "line_height": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Line Height",
-          "type": "number"
-        },
-        "outline_width": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Outline Width",
-          "type": "number"
-        },
-        "outline_color": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "maxItems": 4,
-          "minItems": 4,
-          "prefixItems": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "title": "Outline Color",
-          "type": "array"
-        },
-        "word_break": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "enum": [
-            "break-word",
-            "break-all"
-          ],
-          "title": "Word Break",
-          "type": "string"
-        },
-        "max_width": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "title": "Max Width",
-          "type": "number"
-        },
-        "get_text_anchor": {
-          "default": "middle",
-          "ecoscope:advanced": true,
-          "enum": [
-            "start",
-            "middle",
-            "end"
-          ],
-          "title": "Get Text Anchor",
-          "type": "string"
-        },
-        "get_alignment_baseline": {
-          "default": "center",
-          "ecoscope:advanced": true,
-          "enum": [
-            "top",
-            "center",
-            "bottom"
-          ],
-          "title": "Get Alignment Baseline",
-          "type": "string"
-        },
-        "get_pixel_offset": {
-          "default": null,
-          "ecoscope:advanced": true,
-          "maxItems": 2,
-          "minItems": 2,
-          "prefixItems": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "title": "Get Pixel Offset",
-          "type": "array"
-        }
-      },
-      "title": "TextLayerStyle",
-      "type": "object"
-    },
     "ScreenshotConfig": {
       "properties": {
         "width": {
@@ -1224,7 +842,8 @@
       "events",
       "Choropleth Setting",
       "choropleth_view_state",
-      "choropleth_count_layer",
+      "event_radius",
+      "text_layer_size",
       "choropleth_png",
       "Community Report"
     ],
@@ -1243,85 +862,6 @@
               }
             }
           ]
-        }
-      }
-    },
-    "choropleth_count_layer": {
-      "layer_style": {
-        "ui:options": {
-          "label": false
-        },
-        "get_position": {
-          "ui:widget": "hidden"
-        },
-        "get_text": {
-          "ui:widget": "hidden"
-        },
-        "get_color": {
-          "ui:widget": "hidden"
-        },
-        "get_background_color": {
-          "ui:widget": "hidden"
-        },
-        "get_border_color": {
-          "ui:widget": "hidden"
-        },
-        "get_border_width": {
-          "ui:widget": "hidden"
-        },
-        "get_angle": {
-          "ui:widget": "hidden"
-        },
-        "background_border_radius": {
-          "ui:widget": "hidden"
-        },
-        "background_padding": {
-          "ui:widget": "hidden"
-        },
-        "outline_color": {
-          "ui:widget": "hidden"
-        },
-        "billboard": {
-          "ui:widget": "hidden"
-        },
-        "background": {
-          "ui:widget": "hidden"
-        },
-        "size_scale": {
-          "ui:widget": "hidden"
-        },
-        "size_units": {
-          "ui:widget": "hidden"
-        },
-        "size_min_pixels": {
-          "ui:widget": "hidden"
-        },
-        "size_max_pixels": {
-          "ui:widget": "hidden"
-        },
-        "font_family": {
-          "ui:widget": "hidden"
-        },
-        "font_weight": {
-          "ui:widget": "hidden"
-        },
-        "line_height": {
-          "ui:widget": "hidden"
-        },
-        "outline_width": {
-          "ui:widget": "hidden"
-        },
-        "max_width": {
-          "ui:widget": "hidden"
-        },
-        "get_text_anchor": {
-          "ui:widget": "hidden"
-        },
-        "get_alignment_baseline": {
-          "ui:widget": "hidden"
-        },
-        "get_pixel_offset": {
-          "ui:widget": "hidden"
         }
       }
     },

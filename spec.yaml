@@ -16,7 +16,8 @@ rjsf-overrides:
       - events
       - Choropleth Setting
       - choropleth_view_state
-      - choropleth_count_layer
+      - event_radius
+      - text_layer_size
       - choropleth_png
       - Community Report
 
@@ -25,59 +26,6 @@ rjsf-overrides:
           label: false
       - ui:options:
           label: false
-
-    choropleth_count_layer.layer_style:
-      ui:options:
-        label: false
-
-    choropleth_count_layer.layer_style.get_position:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.get_text:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.get_color:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.get_background_color:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.get_border_color:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.get_border_width:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.get_angle:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.background_border_radius:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.background_padding:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.outline_color:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.billboard:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.background:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.size_scale:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.size_units:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.size_min_pixels:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.size_max_pixels:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.font_family:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.font_weight:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.line_height:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.outline_width:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.max_width:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.get_text_anchor:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.get_alignment_baseline:
-      ui:widget: hidden
-    choropleth_count_layer.layer_style.get_pixel_offset:
-      ui:widget: hidden
 
     choropleth_png.config:
       ui:options:
@@ -148,51 +96,15 @@ rjsf-overrides:
 
     choropleth_png.properties.config.ecoscope:advanced: true
 
-    choropleth_count_layer.title: Count Layer
+    event_radius.properties.var.title: Radius
+    event_radius.properties.var.default: 5
+    event_radius.properties.var.description: "Size of each event marker, in pixels."
+    event_radius.properties.var.ecoscope:advanced: true
 
-    choropleth_count_layer.properties.layer_style.properties.get_text.type: string
-    choropleth_count_layer.properties.layer_style.properties.get_text.title: Get Text
-    choropleth_count_layer.properties.layer_style.properties.get_text.default: label
-    choropleth_count_layer.properties.layer_style.properties.get_text.description: "Column or expression providing the label text."
-
-    choropleth_count_layer.properties.layer_style.properties.background.type: boolean
-    choropleth_count_layer.properties.layer_style.properties.background.title: Background
-    choropleth_count_layer.properties.layer_style.properties.background.default: false
-    choropleth_count_layer.properties.layer_style.properties.background.description: "Draw a background box behind the text."
-
-    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.type: array
-    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.items:
-      type: number
-    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.title: Get Pixel Offset
-    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.default: [0, 10]
-    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.description: "Offset of the text label, in pixels, relative to its anchor point."
-
-    choropleth_count_layer.properties.layer_style.properties.get_size.anyOf:
-      - type: number
-        default: 12
-        title: Get Size
-    choropleth_count_layer.properties.layer_style.properties.get_size.default: 12
-    choropleth_count_layer.properties.layer_style.properties.get_size.title: Get Size
-    choropleth_count_layer.properties.layer_style.properties.get_size.description: "Font size of the meeting count labels, in pixels."
-
-    choropleth_count_layer.properties.layer_style.properties.auto_highlight.type: boolean
-    choropleth_count_layer.properties.layer_style.properties.auto_highlight.title: Auto Highlight
-    choropleth_count_layer.properties.layer_style.properties.auto_highlight.default: false
-    choropleth_count_layer.properties.layer_style.properties.auto_highlight.description: "Enable automatic highlighting when hovering over a label."
-
-    choropleth_count_layer.properties.layer_style.properties.opacity.type: number
-    choropleth_count_layer.properties.layer_style.properties.opacity.title: Opacity
-    choropleth_count_layer.properties.layer_style.properties.opacity.default: 1
-    choropleth_count_layer.properties.layer_style.properties.opacity.description: "Transparency of the meeting count labels, from 0 (invisible) to 1 (fully opaque)."
-
-    choropleth_count_layer.properties.layer_style.properties.word_break.type: string
-    choropleth_count_layer.properties.layer_style.properties.word_break.enum: [break-word, break-all]
-    choropleth_count_layer.properties.layer_style.properties.word_break.title: Word Break
-    choropleth_count_layer.properties.layer_style.properties.word_break.default: break-word
-    choropleth_count_layer.properties.layer_style.properties.word_break.description: "How label text wraps when it exceeds Max Width."
-
-    choropleth_count_layer.properties.layer_style.default.word_break: break-word
-    choropleth_count_layer.properties.layer_style.default.get_pixel_offset: [0, 10]
+    text_layer_size.properties.var.title: Text Layer Size
+    text_layer_size.properties.var.default: 12
+    text_layer_size.properties.var.description: "Font size of the choropleth text labels (polygon names and meeting counts), in pixels."
+    text_layer_size.properties.var.ecoscope:advanced: true
 
     Choropleth Setting.properties.choropleth_colormap.properties.max_classes.default: 5
     Choropleth Setting.properties.choropleth_colormap.properties.max_classes.description: "Maximum number of colour classes for the choropleth (Natural Breaks). Automatically reduced if fewer unique values exist in the data."
@@ -257,7 +169,7 @@ requirements:
     version: 0.9.2
     channel: conda-forge
   - name: ecoscope-workflows-ext-eden
-    version: "0.0.6"
+    version: "0.0.7"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 
 task-instance-defaults:
@@ -848,6 +760,10 @@ workflow:
       argnames: df
       argvalues: ${{ workflow.choropleth_events.return }}
 
+  - name: Event Marker Size
+    id: event_radius
+    task: set_int_var
+
   - name: Event Layer
     id: events_scatter_layer
     task: ecoscope.platform.tasks.results.create_scatterplot_layer
@@ -861,7 +777,7 @@ workflow:
         opacity: 0.8
         stroked: true
         line_width_min_pixels: 1
-        get_radius: 5
+        get_radius: ${{ workflow.event_radius.return }}
         get_line_width: 1
         radius_min_pixels: 5
         radius_max_pixels: 8
@@ -981,6 +897,10 @@ workflow:
       argnames: df
       argvalues: ${{ workflow.choropleth_colormap.return }}
 
+  - name: Text Layer Size
+    id: text_layer_size
+    task: set_int_var
+
   - name: TextLayer
     id: choropleth_name_layer
     task: ecoscope.platform.tasks.results.create_text_layer_pydeck
@@ -989,7 +909,7 @@ workflow:
       legend: null
       layer_style:
         get_text: label
-        get_size: 10
+        get_size: ${{ workflow.text_layer_size.return }}
         get_color: [40, 40, 40, 230]
         background: false
         get_pixel_offset: [0, -10]
@@ -1016,6 +936,14 @@ workflow:
       data_url: null
       legend: null
       tooltip_columns: null
+      layer_style:
+        get_text: label
+        background: false
+        get_pixel_offset: [0, 10]
+        get_size: ${{ workflow.text_layer_size.return }}
+        auto_highlight: false
+        opacity: 1
+        word_break: break-word
     mapvalues:
       argnames: geodataframe
       argvalues: ${{ workflow.choropleth_count_labels.return }}
@@ -1193,8 +1121,8 @@ workflow:
           location_column: meeting_location_level_one
           workflow_title: Community Engagement Report
           workflow_subtitle: Wildlife Dynamics
-        mapvalues:
-          argnames: report_data
+        map:
+          argnames: [composite_filter, report_data]
           argvalues: ${{ workflow.report_inputs.return }}
 
   # --- Dashboard ---

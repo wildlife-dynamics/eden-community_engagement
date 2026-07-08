@@ -114,6 +114,7 @@ from ecoscope_workflows_ext_eden.tasks import (
 from ecoscope_workflows_ext_eden.tasks import (
     prepare_polygon_labels as prepare_polygon_labels,
 )
+from ecoscope_workflows_ext_eden.tasks import set_int_var as set_int_var
 from wt_contracts import validate as _validate
 from wt_task import task
 
@@ -1243,6 +1244,23 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .mapvalues(argnames=["df"], argvalues=choropleth_events)
     )
 
+    event_radius = (
+        task(set_int_var)
+        .validate()
+        .set_task_instance_id("event_radius")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(**(params.get("event_radius") or {}))
+        .call()
+    )
+
     events_scatter_layer = (
         task(create_scatterplot_layer)
         .validate()
@@ -1266,7 +1284,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
                 "opacity": 0.8,
                 "stroked": True,
                 "line_width_min_pixels": 1,
-                "get_radius": 5,
+                "get_radius": event_radius,
                 "get_line_width": 1,
                 "radius_min_pixels": 5,
                 "radius_max_pixels": 8,
@@ -1477,6 +1495,23 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .mapvalues(argnames=["df"], argvalues=choropleth_colormap)
     )
 
+    text_layer_size = (
+        task(set_int_var)
+        .validate()
+        .set_task_instance_id("text_layer_size")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(**(params.get("text_layer_size") or {}))
+        .call()
+    )
+
     choropleth_name_layer = (
         task(create_text_layer_pydeck)
         .validate()
@@ -1495,7 +1530,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             legend=None,
             layer_style={
                 "get_text": "label",
-                "get_size": 10,
+                "get_size": text_layer_size,
                 "get_color": [40, 40, 40, 230],
                 "background": False,
                 "get_pixel_offset": [0, -10],
@@ -1545,6 +1580,15 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             data_url=None,
             legend=None,
             tooltip_columns=None,
+            layer_style={
+                "get_text": "label",
+                "background": False,
+                "get_pixel_offset": [0, 10],
+                "get_size": text_layer_size,
+                "auto_highlight": False,
+                "opacity": 1,
+                "word_break": "break-word",
+            },
             **(params.get("choropleth_count_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_count_labels)
@@ -1893,7 +1937,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             workflow_subtitle="Wildlife Dynamics",
             **(params.get("generate_report") or {}),
         )
-        .mapvalues(argnames=["report_data"], argvalues=report_inputs)
+        .map(argnames=["composite_filter", "report_data"], argvalues=report_inputs)
     )
 
     dashboard = (
