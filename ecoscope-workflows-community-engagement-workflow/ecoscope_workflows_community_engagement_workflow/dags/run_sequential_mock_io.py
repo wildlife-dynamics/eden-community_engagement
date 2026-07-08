@@ -134,7 +134,6 @@ from ecoscope_workflows_ext_eden.tasks import (
 from ecoscope_workflows_ext_eden.tasks import (
     prepare_polygon_labels as prepare_polygon_labels,
 )
-from ecoscope_workflows_ext_eden.tasks import set_int_var as set_int_var
 
 
 def main(params: dict[str, Any], validate_params_schema: bool = True):
@@ -1277,15 +1276,21 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         )
         .partial(
             data_url=None,
-            layer_style={
-                "get_fill_color": [255, 140, 0, 200],
-                "opacity": 0.8,
-                "stroked": True,
-                "get_line_color": [255, 255, 255, 180],
-                "line_width_min_pixels": 1,
-            },
             legend=None,
             tooltip_columns=["serial_number", "state"],
+            layer_style={
+                "get_fill_color": [255, 140, 0, 200],
+                "get_line_color": [255, 255, 255, 180],
+                "opacity": 0.8,
+                "stroked": True,
+                "line_width_min_pixels": 1,
+                "get_radius": 5,
+                "get_line_width": 1,
+                "radius_min_pixels": 5,
+                "radius_max_pixels": 8,
+                "auto_highlight": False,
+                "pickable": True,
+            },
             **(params.get("events_scatter_layer") or {}),
         )
         .mapvalues(argnames=["geodataframe"], argvalues=choropleth_event_points)
@@ -1557,12 +1562,6 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .partial(
             data_url=None,
             legend=None,
-            layer_style={
-                "get_text": "label",
-                "get_color": [40, 40, 40, 230],
-                "background": False,
-                "get_pixel_offset": [0, 10],
-            },
             tooltip_columns=None,
             **(params.get("choropleth_count_layer") or {}),
         )
@@ -1596,40 +1595,6 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .call()
     )
 
-    choropleth_resolution_width = (
-        task(set_int_var)
-        .validate()
-        .set_task_instance_id("choropleth_resolution_width")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(**(params.get("choropleth_resolution_width") or {}))
-        .call()
-    )
-
-    choropleth_resolution_height = (
-        task(set_int_var)
-        .validate()
-        .set_task_instance_id("choropleth_resolution_height")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(**(params.get("choropleth_resolution_height") or {}))
-        .call()
-    )
-
     choropleth_view_state = (
         task(create_viewstate_gdf)
         .validate()
@@ -1644,11 +1609,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
-            gdf=adjudication_polygons,
-            padding=0.2,
-            viewport_width=choropleth_resolution_width,
-            viewport_height=choropleth_resolution_height,
-            **(params.get("choropleth_view_state") or {}),
+            gdf=adjudication_polygons, **(params.get("choropleth_view_state") or {})
         )
         .call()
     )
@@ -1810,14 +1771,6 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         )
         .partial(
             output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-            config={
-                "width": choropleth_resolution_width,
-                "height": choropleth_resolution_height,
-                "full_page": False,
-                "timeout": 0,
-                "max_concurrent_pages": 5,
-                "serve_local_files": False,
-            },
             **(params.get("choropleth_png") or {}),
         )
         .mapvalues(argnames=["html_path"], argvalues=choropleth_map_html_expanded)

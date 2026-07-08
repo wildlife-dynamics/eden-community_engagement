@@ -350,33 +350,109 @@
       "type": "object",
       "title": ""
     },
-    "choropleth_resolution_width": {
+    "choropleth_count_layer": {
       "additionalProperties": false,
       "properties": {
-        "var": {
-          "title": "",
-          "type": "integer"
+        "layer_style": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/TextLayerStyle"
+            }
+          ],
+          "default": {
+            "auto_highlight": false,
+            "opacity": 1,
+            "pickable": true,
+            "get_position": "geometry.coordinates",
+            "get_text": "label",
+            "get_color": null,
+            "get_background_color": null,
+            "get_border_color": null,
+            "get_border_width": null,
+            "get_size": 12,
+            "get_angle": null,
+            "background_border_radius": null,
+            "background_padding": null,
+            "billboard": false,
+            "background": false,
+            "size_scale": 1,
+            "size_units": "pixels",
+            "size_min_pixels": 0,
+            "size_max_pixels": null,
+            "font_family": "Monaco, monospace",
+            "font_weight": null,
+            "line_height": null,
+            "outline_width": null,
+            "outline_color": null,
+            "word_break": null,
+            "max_width": null,
+            "get_text_anchor": "middle",
+            "get_alignment_baseline": "center",
+            "get_pixel_offset": null
+          },
+          "title": "Layer Style",
+          "description": "Style arguments for the layer.",
+          "ecoscope:advanced": true
         }
       },
-      "required": [
-        "var"
-      ],
       "type": "object",
-      "title": "Width"
+      "required": [],
+      "title": "Count Layer"
     },
-    "choropleth_resolution_height": {
+    "choropleth_view_state": {
       "additionalProperties": false,
       "properties": {
-        "var": {
-          "title": "",
-          "type": "integer"
+        "padding": {
+          "default": 0.1,
+          "exclusiveMaximum": 1.0,
+          "minimum": 0.0,
+          "title": "Padding",
+          "type": "number",
+          "description": "Viewport padding fraction (0\u20131). Fraction of each viewport edge reserved as margin."
+        },
+        "viewport_width": {
+          "default": 1280,
+          "title": "Viewport Width",
+          "type": "integer",
+          "description": "Target viewport width in pixels."
+        },
+        "viewport_height": {
+          "default": 720,
+          "title": "Viewport Height",
+          "type": "integer",
+          "description": "Target viewport height in pixels."
         }
       },
-      "required": [
-        "var"
-      ],
+      "required": [],
       "type": "object",
-      "title": "Height"
+      "title": "Choropleth View State"
+    },
+    "choropleth_png": {
+      "additionalProperties": false,
+      "properties": {
+        "config": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/ScreenshotConfig"
+            }
+          ],
+          "default": {
+            "width": 1280,
+            "height": 720,
+            "full_page": true,
+            "device_scale_factor": 2.0,
+            "wait_for_timeout": 30000,
+            "timeout": 0,
+            "max_concurrent_pages": 5,
+            "serve_local_files": false
+          },
+          "title": "Config",
+          "description": "The screenshot configuration"
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Choropleth Map Screenshot"
     },
     "generate_report": {
       "additionalProperties": false,
@@ -516,6 +592,360 @@
       ],
       "title": "Category",
       "type": "object"
+    },
+    "TextLayerStyle": {
+      "description": "Text Layer style kwargs\nSee https://deck.gl/docs/api-reference/layers/text-layer for more info",
+      "properties": {
+        "auto_highlight": {
+          "default": false,
+          "ecoscope:advanced": true,
+          "title": "Auto Highlight",
+          "type": "boolean"
+        },
+        "opacity": {
+          "default": 1,
+          "ecoscope:advanced": true,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Opacity",
+          "type": "number"
+        },
+        "pickable": {
+          "default": true,
+          "ecoscope:advanced": true,
+          "title": "Pickable",
+          "type": "boolean"
+        },
+        "get_position": {
+          "default": "geometry.coordinates",
+          "ecoscope:advanced": true,
+          "title": "Get Position",
+          "type": "string"
+        },
+        "get_text": {
+          "default": "label",
+          "ecoscope:advanced": true,
+          "title": "Get Text",
+          "type": "string"
+        },
+        "get_color": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Get Color",
+          "type": "string"
+        },
+        "get_background_color": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Get Background Color",
+          "type": "string"
+        },
+        "get_border_color": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Get Border Color",
+          "type": "string"
+        },
+        "get_border_width": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Get Border Width"
+        },
+        "get_size": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "default": 12,
+          "ecoscope:advanced": true,
+          "title": "Get Size"
+        },
+        "get_angle": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Get Angle"
+        },
+        "background_border_radius": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            }
+          ],
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Background Border Radius"
+        },
+        "background_padding": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            }
+          ],
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Background Padding"
+        },
+        "billboard": {
+          "default": false,
+          "ecoscope:advanced": true,
+          "title": "Billboard",
+          "type": "boolean"
+        },
+        "background": {
+          "default": false,
+          "ecoscope:advanced": true,
+          "title": "Background",
+          "type": "boolean"
+        },
+        "size_scale": {
+          "default": 1,
+          "ecoscope:advanced": true,
+          "title": "Size Scale",
+          "type": "number"
+        },
+        "size_units": {
+          "default": "pixels",
+          "ecoscope:advanced": true,
+          "enum": [
+            "meters",
+            "pixels"
+          ],
+          "title": "Size Units",
+          "type": "string"
+        },
+        "size_min_pixels": {
+          "default": 0,
+          "ecoscope:advanced": true,
+          "title": "Size Min Pixels",
+          "type": "number"
+        },
+        "size_max_pixels": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Size Max Pixels",
+          "type": "number"
+        },
+        "font_family": {
+          "default": "Monaco, monospace",
+          "ecoscope:advanced": true,
+          "title": "Font Family",
+          "type": "string"
+        },
+        "font_weight": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Font Weight",
+          "type": "string"
+        },
+        "line_height": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Line Height",
+          "type": "number"
+        },
+        "outline_width": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Outline Width",
+          "type": "number"
+        },
+        "outline_color": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Outline Color",
+          "type": "array"
+        },
+        "word_break": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "enum": [
+            "break-word",
+            "break-all"
+          ],
+          "title": "Word Break",
+          "type": "string"
+        },
+        "max_width": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "title": "Max Width",
+          "type": "number"
+        },
+        "get_text_anchor": {
+          "default": "middle",
+          "ecoscope:advanced": true,
+          "enum": [
+            "start",
+            "middle",
+            "end"
+          ],
+          "title": "Get Text Anchor",
+          "type": "string"
+        },
+        "get_alignment_baseline": {
+          "default": "center",
+          "ecoscope:advanced": true,
+          "enum": [
+            "top",
+            "center",
+            "bottom"
+          ],
+          "title": "Get Alignment Baseline",
+          "type": "string"
+        },
+        "get_pixel_offset": {
+          "default": null,
+          "ecoscope:advanced": true,
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Get Pixel Offset",
+          "type": "array"
+        }
+      },
+      "title": "TextLayerStyle",
+      "type": "object"
+    },
+    "ScreenshotConfig": {
+      "properties": {
+        "width": {
+          "default": 1280,
+          "title": "Width",
+          "type": "integer"
+        },
+        "height": {
+          "default": 720,
+          "title": "Height",
+          "type": "integer"
+        },
+        "full_page": {
+          "default": true,
+          "title": "Full Page",
+          "type": "boolean"
+        },
+        "device_scale_factor": {
+          "default": 2.0,
+          "title": "Device Scale Factor",
+          "type": "number"
+        },
+        "wait_for_timeout": {
+          "default": 30000,
+          "description": "Forced wait time (ms) after network idle before taking the screenshot.",
+          "title": "Wait For Timeout",
+          "type": "integer"
+        },
+        "timeout": {
+          "default": 0,
+          "description": "Playwright navigation/screenshot timeout in ms. 0 disables timeouts.",
+          "title": "Timeout",
+          "type": "integer"
+        },
+        "max_concurrent_pages": {
+          "default": 5,
+          "description": "Maximum number of pages open at once when batching.",
+          "title": "Max Concurrent Pages",
+          "type": "integer"
+        },
+        "serve_local_files": {
+          "default": false,
+          "description": "Start a local HTTP server on port 8099 serving from the HTML file's directory (or their common parent for batches). Use http://127.0.0.1:8099/<relative-path> as data_url in LayerDefinition to avoid CORS restrictions when deck.gl fetches local GeoJSON files. Paths are relative to the HTML file location.",
+          "title": "Serve Local Files",
+          "type": "boolean"
+        }
+      },
+      "title": "ScreenshotConfig",
+      "type": "object"
     }
   },
   "uiSchema": {
@@ -546,6 +976,13 @@
         "colormap_max"
       ]
     },
+    "choropleth_view_state": {
+      "ui:order": [
+        "padding",
+        "viewport_width",
+        "viewport_height"
+      ]
+    },
     "ui:order": [
       "workflow_details",
       "er_client",
@@ -554,8 +991,9 @@
       "groupers",
       "events",
       "choropleth_colormap",
-      "choropleth_resolution_width",
-      "choropleth_resolution_height",
+      "choropleth_count_layer",
+      "choropleth_view_state",
+      "choropleth_png",
       "generate_report"
     ]
   },

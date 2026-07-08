@@ -15,9 +15,8 @@ rjsf-overrides:
       - groupers
       - events
       - Choropleth Setting
-      - events_scatter_layer
+      - choropleth_view_state
       - choropleth_count_layer
-      - Choropleth Resolution
       - choropleth_png
       - Community Report
 
@@ -27,23 +26,60 @@ rjsf-overrides:
       - ui:options:
           label: false
 
-    events_scatter_layer.layer_style:
-      ui:options:
-        label: false
-
     choropleth_count_layer.layer_style:
       ui:options:
         label: false
 
+    choropleth_count_layer.layer_style.get_position:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.get_text:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.get_color:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.get_background_color:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.get_border_color:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.get_border_width:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.get_angle:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.background_border_radius:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.background_padding:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.outline_color:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.billboard:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.background:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.size_scale:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.size_units:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.size_min_pixels:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.size_max_pixels:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.font_family:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.font_weight:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.line_height:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.outline_width:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.max_width:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.get_text_anchor:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.get_alignment_baseline:
+      ui:widget: hidden
+    choropleth_count_layer.layer_style.get_pixel_offset:
+      ui:widget: hidden
+
     choropleth_png.config:
-      ui:options:
-        label: false
-
-    Choropleth Resolution.choropleth_resolution_width:
-      ui:options:
-        label: false
-
-    Choropleth Resolution.choropleth_resolution_height:
       ui:options:
         label: false
 
@@ -61,15 +97,14 @@ rjsf-overrides:
 
     Community Report.properties.generate_report.properties.template_path.default: "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
 
-    Choropleth Resolution.ecoscope:advanced: true
+    choropleth_view_state.properties.viewport_width.default: 2560
+    choropleth_view_state.properties.viewport_width.description: "Width of the map's viewport, in pixels. Should match Screenshot Setting's Width for the sharpest result."
 
-    Choropleth Resolution.properties.choropleth_resolution_width.properties.var.title: Width
-    Choropleth Resolution.properties.choropleth_resolution_width.properties.var.default: 2560
-    Choropleth Resolution.properties.choropleth_resolution_width.properties.var.description: "Width of the map's viewport, in pixels."
+    choropleth_view_state.properties.viewport_height.default: 1440
+    choropleth_view_state.properties.viewport_height.description: "Height of the map's viewport, in pixels. Should match Screenshot Setting's Height for the sharpest result."
 
-    Choropleth Resolution.properties.choropleth_resolution_height.properties.var.title: Height
-    Choropleth Resolution.properties.choropleth_resolution_height.properties.var.default: 1440
-    Choropleth Resolution.properties.choropleth_resolution_height.properties.var.description: "Height of the map's viewport, in pixels."
+    choropleth_view_state.properties.padding.default: 0.2
+    choropleth_view_state.properties.padding.ecoscope:advanced: true
 
     choropleth_png.title: Screenshot Setting
     choropleth_png.properties.config.properties.device_scale_factor.type: number
@@ -81,27 +116,83 @@ rjsf-overrides:
     choropleth_png.properties.config.properties.wait_for_timeout.default: 30000
     choropleth_png.properties.config.properties.wait_for_timeout.description: "Forced wait time (ms) after network idle before taking the screenshot."
 
+    choropleth_png.properties.config.properties.width.type: integer
+    choropleth_png.properties.config.properties.width.title: Width
+    choropleth_png.properties.config.properties.width.default: 2560
+    choropleth_png.properties.config.properties.width.description: "Screenshot width, in pixels."
+
+    choropleth_png.properties.config.properties.height.type: integer
+    choropleth_png.properties.config.properties.height.title: Height
+    choropleth_png.properties.config.properties.height.default: 1440
+    choropleth_png.properties.config.properties.height.description: "Screenshot height, in pixels."
+
+    choropleth_png.properties.config.properties.full_page.type: boolean
+    choropleth_png.properties.config.properties.full_page.title: Full Page
+    choropleth_png.properties.config.properties.full_page.default: false
+    choropleth_png.properties.config.properties.full_page.description: "Capture the full scrollable page instead of just the visible viewport."
+
+    choropleth_png.properties.config.properties.timeout.type: integer
+    choropleth_png.properties.config.properties.timeout.title: Timeout
+    choropleth_png.properties.config.properties.timeout.default: 0
+    choropleth_png.properties.config.properties.timeout.description: "Playwright navigation/screenshot timeout in ms. 0 disables timeouts."
+
+    choropleth_png.properties.config.properties.max_concurrent_pages.type: integer
+    choropleth_png.properties.config.properties.max_concurrent_pages.title: Max Concurrent Pages
+    choropleth_png.properties.config.properties.max_concurrent_pages.default: 5
+    choropleth_png.properties.config.properties.max_concurrent_pages.description: "Maximum number of pages open at once when batching."
+
+    choropleth_png.properties.config.properties.serve_local_files.type: boolean
+    choropleth_png.properties.config.properties.serve_local_files.title: Serve Local Files
+    choropleth_png.properties.config.properties.serve_local_files.default: false
+    choropleth_png.properties.config.properties.serve_local_files.description: "Start a local HTTP server serving from the HTML file's directory, to avoid CORS restrictions when deck.gl fetches local files."
+
     choropleth_png.properties.config.ecoscope:advanced: true
 
-    events_scatter_layer.title: Event Layer
-    events_scatter_layer.properties.layer_style.properties.radius_min_pixels.type: number
-    events_scatter_layer.properties.layer_style.properties.radius_min_pixels.title: Min Radius
-    events_scatter_layer.properties.layer_style.properties.radius_min_pixels.default: 5
-    events_scatter_layer.properties.layer_style.properties.radius_min_pixels.description: "Minimum marker radius in pixels."
-
-    events_scatter_layer.properties.layer_style.properties.radius_max_pixels.type: number
-    events_scatter_layer.properties.layer_style.properties.radius_max_pixels.title: Max Radius
-    events_scatter_layer.properties.layer_style.properties.radius_max_pixels.default: 8
-    events_scatter_layer.properties.layer_style.properties.radius_max_pixels.description: "Maximum marker radius in pixels."
-
-    events_scatter_layer.properties.layer_style.ecoscope:advanced: true
-
     choropleth_count_layer.title: Count Layer
-    choropleth_count_layer.properties.layer_style.properties.get_size.type: number
-    choropleth_count_layer.properties.layer_style.properties.get_size.title: Text Size
+
+    choropleth_count_layer.properties.layer_style.properties.get_text.type: string
+    choropleth_count_layer.properties.layer_style.properties.get_text.title: Get Text
+    choropleth_count_layer.properties.layer_style.properties.get_text.default: label
+    choropleth_count_layer.properties.layer_style.properties.get_text.description: "Column or expression providing the label text."
+
+    choropleth_count_layer.properties.layer_style.properties.background.type: boolean
+    choropleth_count_layer.properties.layer_style.properties.background.title: Background
+    choropleth_count_layer.properties.layer_style.properties.background.default: false
+    choropleth_count_layer.properties.layer_style.properties.background.description: "Draw a background box behind the text."
+
+    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.type: array
+    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.items:
+      type: number
+    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.title: Get Pixel Offset
+    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.default: [0, 10]
+    choropleth_count_layer.properties.layer_style.properties.get_pixel_offset.description: "Offset of the text label, in pixels, relative to its anchor point."
+
+    choropleth_count_layer.properties.layer_style.properties.get_size.anyOf:
+      - type: number
+        default: 12
+        title: Get Size
     choropleth_count_layer.properties.layer_style.properties.get_size.default: 12
+    choropleth_count_layer.properties.layer_style.properties.get_size.title: Get Size
     choropleth_count_layer.properties.layer_style.properties.get_size.description: "Font size of the meeting count labels, in pixels."
-    choropleth_count_layer.properties.layer_style.ecoscope:advanced: true
+
+    choropleth_count_layer.properties.layer_style.properties.auto_highlight.type: boolean
+    choropleth_count_layer.properties.layer_style.properties.auto_highlight.title: Auto Highlight
+    choropleth_count_layer.properties.layer_style.properties.auto_highlight.default: false
+    choropleth_count_layer.properties.layer_style.properties.auto_highlight.description: "Enable automatic highlighting when hovering over a label."
+
+    choropleth_count_layer.properties.layer_style.properties.opacity.type: number
+    choropleth_count_layer.properties.layer_style.properties.opacity.title: Opacity
+    choropleth_count_layer.properties.layer_style.properties.opacity.default: 1
+    choropleth_count_layer.properties.layer_style.properties.opacity.description: "Transparency of the meeting count labels, from 0 (invisible) to 1 (fully opaque)."
+
+    choropleth_count_layer.properties.layer_style.properties.word_break.type: string
+    choropleth_count_layer.properties.layer_style.properties.word_break.enum: [break-word, break-all]
+    choropleth_count_layer.properties.layer_style.properties.word_break.title: Word Break
+    choropleth_count_layer.properties.layer_style.properties.word_break.default: break-word
+    choropleth_count_layer.properties.layer_style.properties.word_break.description: "How label text wraps when it exceeds Max Width."
+
+    choropleth_count_layer.properties.layer_style.default.word_break: break-word
+    choropleth_count_layer.properties.layer_style.default.get_pixel_offset: [0, 10]
 
     Choropleth Setting.properties.choropleth_colormap.properties.max_classes.default: 5
     Choropleth Setting.properties.choropleth_colormap.properties.max_classes.description: "Maximum number of colour classes for the choropleth (Natural Breaks). Automatically reduced if fewer unique values exist in the data."
@@ -762,14 +853,20 @@ workflow:
     task: ecoscope.platform.tasks.results.create_scatterplot_layer
     partial:
       data_url: null
-      layer_style:
-        get_fill_color: [255, 140, 0, 200]
-        opacity: 0.8
-        stroked: true
-        get_line_color: [255, 255, 255, 180]
-        line_width_min_pixels: 1
       legend: null
       tooltip_columns: ["serial_number", "state"]
+      layer_style:
+        get_fill_color: [255, 140, 0, 200]
+        get_line_color: [255, 255, 255, 180]
+        opacity: 0.8
+        stroked: true
+        line_width_min_pixels: 1
+        get_radius: 5
+        get_line_width: 1
+        radius_min_pixels: 5
+        radius_max_pixels: 8
+        auto_highlight: false
+        pickable: true
     mapvalues:
       argnames: geodataframe
       argvalues: ${{ workflow.choropleth_event_points.return }}
@@ -918,11 +1015,6 @@ workflow:
     partial:
       data_url: null
       legend: null
-      layer_style:
-        get_text: label
-        get_color: [40, 40, 40, 230]
-        background: false
-        get_pixel_offset: [0, 10]
       tooltip_columns: null
     mapvalues:
       argnames: geodataframe
@@ -940,26 +1032,11 @@ workflow:
         - ${{ workflow.missing_scatter_layer.return }}
         - ${{ workflow.missing_label_layer.return }}
 
-  - title: Choropleth Resolution
-    type: task-group
-    description: Controls how sharp and detailed the choropleth map image is.
-    tasks:
-      - name: Width
-        id: choropleth_resolution_width
-        task: set_int_var
-
-      - name: Height
-        id: choropleth_resolution_height
-        task: set_int_var
-
   - name: Choropleth View State
     id: choropleth_view_state
     task: create_viewstate_gdf
     partial:
       gdf: ${{ workflow.adjudication_polygons.return }}
-      padding: 0.2
-      viewport_width: ${{ workflow.choropleth_resolution_width.return }}
-      viewport_height: ${{ workflow.choropleth_resolution_height.return }}
 
   - name: Draw Choropleth Map
     id: choropleth_map
@@ -1040,13 +1117,6 @@ workflow:
     task: html_to_png
     partial:
       output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-      config:
-        width: ${{ workflow.choropleth_resolution_width.return }}
-        height: ${{ workflow.choropleth_resolution_height.return }}
-        full_page: false
-        timeout: 0
-        max_concurrent_pages: 5
-        serve_local_files: false
     mapvalues:
       argnames: html_path
       argvalues: ${{ workflow.choropleth_map_html_expanded.return }}
