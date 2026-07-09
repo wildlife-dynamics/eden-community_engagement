@@ -736,6 +736,10 @@
             {
               "const": "meeting_location_level_one",
               "title": "Adjudication / Camp / Chiefdom"
+            },
+            {
+              "const": "meeting_convener",
+              "title": "Meeting Convener"
             }
           ]
         }

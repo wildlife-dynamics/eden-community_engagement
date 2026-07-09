@@ -527,6 +527,30 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
         .call()
     )
 
+    extract_meeting_convener = (
+        task(extract_value_from_json_column)
+        .validate()
+        .set_task_instance_id("extract_meeting_convener")
+        .handle_errors()
+        .with_tracing()
+        .skipif(
+            conditions=[
+                any_is_empty_df,
+                any_dependency_skipped,
+            ],
+            unpack_depth=1,
+        )
+        .partial(
+            df=extract_location_one,
+            column_name="event_details",
+            field_name_options=["meeting_convener"],
+            output_column_name="meeting_convener",
+            output_type="str",
+            **(params.get("extract_meeting_convener") or {}),
+        )
+        .call()
+    )
+
     events_with_temporal_index = (
         task(add_temporal_idx)
         .validate()
@@ -541,7 +565,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
-            df=extract_location_one,
+            df=extract_meeting_convener,
             time_col="time",
             groupers=groupers,
             cast_to_datetime=True,

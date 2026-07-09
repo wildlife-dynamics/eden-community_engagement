@@ -5,6 +5,8 @@ rjsf-overrides:
     ValueGrouper.properties.index_name.oneOf:
       - const: meeting_location_level_one
         title: Adjudication / Camp / Chiefdom
+      - const: meeting_convener
+        title: Meeting Convener
 
   uiSchema:
     "ui:order":
@@ -332,6 +334,15 @@ workflow:
           output_column_name: meeting_location_level_one
           output_type: str
 
+      - id: extract_meeting_convener
+        task: extract_value_from_json_column
+        partial:
+          df: ${{ workflow.extract_location_one.return }}
+          column_name: event_details
+          field_name_options: [meeting_convener]
+          output_column_name: meeting_convener
+          output_type: str
+
   # --- Add Temporal Index + Split by Groupers ---
   # Temporal index columns are added for each TemporalGrouper; split produces one df per group.
 
@@ -339,7 +350,7 @@ workflow:
     id: events_with_temporal_index
     task: add_temporal_idx
     partial:
-      df: ${{ workflow.extract_location_one.return }}
+      df: ${{ workflow.extract_meeting_convener.return }}
       time_col: time
       groupers: ${{ workflow.groupers.return }}
       cast_to_datetime: true

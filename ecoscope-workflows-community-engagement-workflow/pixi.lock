@@ -777,7 +777,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/google-crc32c-1.8.0-py312h090f823_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/graphite2-1.3.15-hf6b4638_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/greenlet-3.5.3-py312h6510ced_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/grpcio-1.82.0-py312h2cd32f3_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/grpcio-1.82.1-py312h2cd32f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/httptools-0.8.0-py312h2bbb03f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/icu-78.3-hef89b57_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/igraph-1.0.1-h1ee73af_0.conda
@@ -820,7 +820,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libglib-2.88.2-ha08bb59_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgoogle-cloud-3.6.0-ha595bda_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgoogle-cloud-storage-3.6.0-hc8aed40_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgrpc-1.82.0-hf3e839d_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgrpc-1.82.1-hf3e839d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libharfbuzz-14.2.1-h5a65909_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libhwy-1.4.0-ha332bbd_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libiconv-1.18-h23cfdf5_2.conda
@@ -1474,7 +1474,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/google-crc32c-1.8.0-py312h6dea175_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/graphite2-1.3.15-hfae3067_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/greenlet-3.5.3-py312hf55c4e8_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/grpcio-1.82.0-py312h3ce8309_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/grpcio-1.82.1-py312h3ce8309_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/httptools-0.8.0-py312hcd1a082_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/icu-78.3-hcab7f73_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/igraph-1.0.1-h1827c4d_0.conda
@@ -1522,7 +1522,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-15.2.0-h8acb6b2_19.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgoogle-cloud-3.6.0-h2efc11c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgoogle-cloud-storage-3.6.0-h66d5b86_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgrpc-1.82.0-h05b84e8_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgrpc-1.82.1-h05b84e8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libharfbuzz-14.2.1-h3a99ef3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libhwy-1.4.0-h0626a34_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libiconv-1.18-h90929bb_2.conda
@@ -3172,7 +3172,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgfortran5-15.2.0-hdae7583_19.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgoogle-cloud-3.6.0-ha595bda_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgoogle-cloud-storage-3.6.0-hc8aed40_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgrpc-1.82.0-hf3e839d_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgrpc-1.82.1-hf3e839d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libhwy-1.4.0-ha332bbd_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libiconv-1.18-h23cfdf5_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libjpeg-turbo-3.1.4.1-h84a0fba_0.conda
@@ -3320,7 +3320,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgomp-15.2.0-he0feb66_19.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgoogle-cloud-3.6.0-hbc29df5_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgoogle-cloud-storage-3.6.0-hdbdcf42_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/libgrpc-1.82.0-h792040b_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/libgrpc-1.82.1-h792040b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libhwy-1.4.0-h10be129_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libiconv-1.18-h3b78370_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libjpeg-turbo-3.1.4.1-hb03c661_0.conda
@@ -3544,7 +3544,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-15.2.0-h8acb6b2_19.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgoogle-cloud-3.6.0-h2efc11c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgoogle-cloud-storage-3.6.0-h66d5b86_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgrpc-1.82.0-h05b84e8_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgrpc-1.82.1-h05b84e8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libhwy-1.4.0-h0626a34_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libiconv-1.18-h90929bb_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libjpeg-turbo-3.1.4.1-he30d5cf_0.conda
@@ -3833,7 +3833,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/libgomp-15.2.0-h8ee18e1_19.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/libgoogle-cloud-3.6.0-hfe3f7e9_1.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/libgoogle-cloud-storage-3.6.0-he04ea4c_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/win-64/libgrpc-1.82.0-he6cc664_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/libgrpc-1.82.1-he6cc664_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/libhwloc-2.13.0-default_h049141e_1000.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/libhwy-1.4.0-h172a326_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/libiconv-1.18-hc1393d2_2.conda
@@ -5983,9 +5983,9 @@ packages:
     - libgrpc >=1.78.1,<1.79.0a0
   size: 7021360
   timestamp: 1774020290672
-- conda: https://conda.anaconda.org/conda-forge/linux-64/libgrpc-1.82.0-h792040b_0.conda
-  sha256: 9266ebb6de5a81d97c2119861fa31a965b7b6c4f7760ff622714ec58d9a80cbc
-  md5: 850bb7e3c3c0da6f4b25672864b9b59d
+- conda: https://conda.anaconda.org/conda-forge/linux-64/libgrpc-1.82.1-h792040b_0.conda
+  sha256: 1e657c1b802c111178bc1845fe06488db5f69a85e34e970ce0989810aa562d45
+  md5: aa4571fc3bcf18ad12370429aa991223
   depends:
   - __glibc >=2.17,<3.0.a0
   - c-ares >=1.34.6,<2.0a0
@@ -5999,14 +5999,14 @@ packages:
   - openssl >=3.5.7,<4.0a0
   - re2
   constrains:
-  - grpc-cpp =1.82.0
+  - grpc-cpp =1.82.1
   license: Apache-2.0
   license_family: APACHE
   run_exports:
     weak:
-    - libgrpc >=1.82.0,<1.83.0a0
-  size: 7162444
-  timestamp: 1783126991766
+    - libgrpc >=1.82.1,<1.83.0a0
+  size: 6957755
+  timestamp: 1783588701960
 - conda: https://conda.anaconda.org/conda-forge/linux-64/libharfbuzz-14.2.1-h17a8019_1.conda
   sha256: 821c315f6b5171aa89e735be2ad84e74eb3f898fc7610ee36cfecd95dfa789e8
   md5: fb4669c3990b94ea32fbb81f433e9aa6
@@ -9456,14 +9456,14 @@ packages:
   run_exports: {}
   size: 271115
   timestamp: 1782524652996
-- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/grpcio-1.82.0-py312h3ce8309_0.conda
-  sha256: 1dae4d553e5c38a98a4369e7b2d8ef704c66ec0454514207df206d98e39afa62
-  md5: cf4387e578e6d1a5575b5c957ecd12f2
+- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/grpcio-1.82.1-py312h3ce8309_0.conda
+  sha256: bdda00328c8c8af1307cd32b0c27daa8b860c4bfd52a4e3fe111ea5d600b5c5f
+  md5: 46030e0466283db0586f07451ec4c587
   depends:
   - libabseil * cxx17*
   - libabseil >=20260526.0,<20260527.0a0
   - libgcc >=14
-  - libgrpc 1.82.0 h05b84e8_0
+  - libgrpc 1.82.1 h05b84e8_0
   - libstdcxx >=14
   - libzlib >=1.3.2,<2.0a0
   - python >=3.12,<3.13.0a0
@@ -9472,8 +9472,8 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   run_exports: {}
-  size: 875311
-  timestamp: 1783125330324
+  size: 875847
+  timestamp: 1783587200366
 - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/httptools-0.8.0-py312hcd1a082_0.conda
   sha256: 75007aaea6918f09bd0f56cb7eb60bc20d4ccd20e8c74408d4561fd92f9d349b
   md5: fa74f27e17de445ef940090774178552
@@ -10399,9 +10399,9 @@ packages:
     - libgoogle-cloud-storage >=3.6.0,<3.7.0a0
   size: 736971
   timestamp: 1783157965972
-- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgrpc-1.82.0-h05b84e8_0.conda
-  sha256: 39856d770891d92536202f9c2af55bd894a6aed67a98509f427a63a15a79d556
-  md5: 0d8e4543826b763463721590b34bc30e
+- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgrpc-1.82.1-h05b84e8_0.conda
+  sha256: 094845d7f466d30e2bb6545a3930b5ec687754839fc2fa0b96543ded54059f29
+  md5: 611f046154e9ffa8be2961b1d6180377
   depends:
   - c-ares >=1.34.6,<2.0a0
   - libabseil * cxx17*
@@ -10414,14 +10414,14 @@ packages:
   - openssl >=3.5.7,<4.0a0
   - re2
   constrains:
-  - grpc-cpp =1.82.0
+  - grpc-cpp =1.82.1
   license: Apache-2.0
   license_family: APACHE
   run_exports:
     weak:
-    - libgrpc >=1.82.0,<1.83.0a0
-  size: 6739755
-  timestamp: 1783125077544
+    - libgrpc >=1.82.1,<1.83.0a0
+  size: 6940885
+  timestamp: 1783587003357
 - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libharfbuzz-14.2.1-h3a99ef3_1.conda
   sha256: ae1d16dd62f626c4dab1240a49f6b04e14e4f30140e5fb26bb835821dba114b6
   md5: 655cedd9626545089b9e9ead153cf619
@@ -20953,15 +20953,15 @@ packages:
   run_exports: {}
   size: 263371
   timestamp: 1782524773735
-- conda: https://conda.anaconda.org/conda-forge/osx-arm64/grpcio-1.82.0-py312h2cd32f3_0.conda
-  sha256: 54c9acb44a318bda4376a868bbfabf8414d546eec2cd95cebebcec08c6565760
-  md5: 30162a57a3d37ce527a18905eb677cf3
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/grpcio-1.82.1-py312h2cd32f3_0.conda
+  sha256: b82d6f1028a2a185f7187cf895e1822594d0c6963a649005e5d6de52ed6c3005
+  md5: c442a87e562e9bc67cb1c84e060d48fe
   depends:
   - __osx >=12.0
   - libabseil * cxx17*
   - libabseil >=20260526.0,<20260527.0a0
   - libcxx >=19
-  - libgrpc 1.82.0 hf3e839d_0
+  - libgrpc 1.82.1 hf3e839d_0
   - libzlib >=1.3.2,<2.0a0
   - python >=3.12,<3.13.0a0
   - python_abi 3.12.* *_cp312
@@ -20969,8 +20969,8 @@ packages:
   license: Apache-2.0
   license_family: APACHE
   run_exports: {}
-  size: 795003
-  timestamp: 1783125064377
+  size: 795560
+  timestamp: 1783587806763
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/httptools-0.8.0-py312h2bbb03f_0.conda
   sha256: e9f593b0480db19f92b5f51990d2144f4192cc49b67e180f8b49ca5dcd3f839b
   md5: 6059c5018f728489df82e9f5647eb4d0
@@ -21862,9 +21862,9 @@ packages:
     - libgoogle-cloud-storage >=3.6.0,<3.7.0a0
   size: 525286
   timestamp: 1783157985912
-- conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgrpc-1.82.0-hf3e839d_0.conda
-  sha256: 55e3c69f4ceca2e488f3cbdaf5a4bc17276bc333c9fe8ac7fc1587b1db630e8d
-  md5: dda26082abafc5dd4c1fe7c90cf928cb
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/libgrpc-1.82.1-hf3e839d_0.conda
+  sha256: b9d0f510488074e889ca3cecd2b7490e8e830f7a60e2e91809a90355bf4d1a57
+  md5: 5f7f645a15eedc24da7f271dc2086bcf
   depends:
   - __osx >=12.0
   - c-ares >=1.34.6,<2.0a0
@@ -21877,14 +21877,14 @@ packages:
   - openssl >=3.5.7,<4.0a0
   - re2
   constrains:
-  - grpc-cpp =1.82.0
+  - grpc-cpp =1.82.1
   license: Apache-2.0
   license_family: APACHE
   run_exports:
     weak:
-    - libgrpc >=1.82.0,<1.83.0a0
-  size: 4586170
-  timestamp: 1783124824999
+    - libgrpc >=1.82.1,<1.83.0a0
+  size: 4898235
+  timestamp: 1783587327477
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libharfbuzz-14.2.1-h5a65909_1.conda
   sha256: 75860db66af9748572038d1e3a2260eca56ee4b38b9523e042fac8caf4277529
   md5: e8d6e86663316dfbdec7dac532824516
@@ -26009,9 +26009,9 @@ packages:
     - libgrpc >=1.78.1,<1.79.0a0
   size: 11546515
   timestamp: 1774013326223
-- conda: https://conda.anaconda.org/conda-forge/win-64/libgrpc-1.82.0-he6cc664_0.conda
-  sha256: 096326089356aa381749cc3799282469f518e4d9237af7cc4ac2314a425caac0
-  md5: 9c4d06dab59c1153846ec6bed2fdfb52
+- conda: https://conda.anaconda.org/conda-forge/win-64/libgrpc-1.82.1-he6cc664_0.conda
+  sha256: 56db0effd12badb6075a2b5877ed72c06e61211b8c9a42843711c7b67a3324e1
+  md5: 343241db44cbda08b4b41689608a07af
   depends:
   - c-ares >=1.34.6,<2.0a0
   - libabseil * cxx17*
@@ -26025,14 +26025,14 @@ packages:
   - vc >=14.3,<15
   - vc14_runtime >=14.44.35208
   constrains:
-  - grpc-cpp =1.82.0
+  - grpc-cpp =1.82.1
   license: Apache-2.0
   license_family: APACHE
   run_exports:
     weak:
-    - libgrpc >=1.82.0,<1.83.0a0
-  size: 11595870
-  timestamp: 1783124764123
+    - libgrpc >=1.82.1,<1.83.0a0
+  size: 11674380
+  timestamp: 1783586253244
 - conda: https://conda.anaconda.org/conda-forge/win-64/libharfbuzz-14.2.1-h03b5201_1.conda
   sha256: 634a64cf43f1ce5a4139334bcdbde54d6854ae33d881ae1774377965e21051a5
   md5: 005469a341088900ca235892d3154c24
