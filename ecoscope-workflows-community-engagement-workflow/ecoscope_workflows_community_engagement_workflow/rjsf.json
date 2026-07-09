@@ -540,7 +540,8 @@
               "type": "number",
               "title": "Scale Factor",
               "default": 2.0,
-              "description": "Rendering scale factor for the screenshot. Higher values produce a sharper image."
+              "maximum": 2.0,
+              "description": "Rendering scale factor for the screenshot. Capped at 2 - higher values crop the choropleth map due to a deck.gl rendering limitation."
             },
             "wait_for_timeout": {
               "type": "integer",
