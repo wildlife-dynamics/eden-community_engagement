@@ -58,7 +58,8 @@ rjsf-overrides:
     choropleth_png.properties.config.properties.device_scale_factor.type: number
     choropleth_png.properties.config.properties.device_scale_factor.title: Scale Factor
     choropleth_png.properties.config.properties.device_scale_factor.default: 2.0
-    choropleth_png.properties.config.properties.device_scale_factor.description: "Rendering scale factor for the screenshot. Higher values produce a sharper image."
+    choropleth_png.properties.config.properties.device_scale_factor.maximum: 2.0
+    choropleth_png.properties.config.properties.device_scale_factor.description: "Rendering scale factor for the screenshot. Capped at 2 - higher values crop the choropleth map due to a deck.gl rendering limitation."
     choropleth_png.properties.config.properties.wait_for_timeout.type: integer
     choropleth_png.properties.config.properties.wait_for_timeout.title: Wait Time (ms)
     choropleth_png.properties.config.properties.wait_for_timeout.default: 30000
@@ -169,7 +170,7 @@ requirements:
     version: 0.9.2
     channel: conda-forge
   - name: ecoscope-workflows-ext-eden
-    version: "0.0.7"
+    version: "0.0.8"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 
 task-instance-defaults:
