@@ -1,5 +1,7 @@
 # Community Engagement Workflow
 
+**[Full setup and configuration guide](https://wildlife-dynamics.github.io/eden-community_engagement/)** — a step-by-step walkthrough covering everything from adding the workflow to reading the results.
+
 Community engagement is central to conservation success. Protected area managers and rangers hold regular meetings with local communities to share information, resolve conflicts, gather intelligence, and build trust. Tracking these interactions consistently and understanding patterns over time is essential for adaptive management and donor reporting.
 
 This workflow automates that process. It connects to your EarthRanger site, pulls your community meeting records, and produces structured reports and a dashboard that give you a clear picture of how engagement is progressing: who you are reaching, how participation is trending, which topics are coming up, and where meetings are concentrated across the landscape.
