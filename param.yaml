@@ -28,11 +28,8 @@ events:
 # feature_group_name:  # uncomment when choropleth is re-enabled
 #   var: ""  # Feature group name in EarthRanger (e.g. adjudication areas, chiefdoms, forest clusters)
 
-choropleth_resolution_width:
-  var: 2560
+event_radius:
+  var: 5
 
-choropleth_resolution_height:
-  var: 1440
-
-generate_report:
-  template_path: "/Users/zak/Documents/w-dynamics/eden-community_engagement/resources/templates/community_engagement_report_template.docx"
+text_layer_size:
+  var: 12

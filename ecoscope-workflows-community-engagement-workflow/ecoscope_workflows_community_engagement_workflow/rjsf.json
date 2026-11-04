@@ -25,8 +25,8 @@
       "properties": {
         "data_source": {
           "$ref": "#/$defs/EarthRangerConnection",
-          "title": "",
-          "description": "Select one of your configured data sources."
+          "description": "Select one of your configured data sources.",
+          "title": ""
         }
       },
       "required": [
@@ -53,8 +53,9 @@
               "min_zoom": 0
             }
           ],
+          "description": "Select tile layers to use as base layers in map outputs. The first layer in the list will be the bottommost layer displayed.",
+          "ecoscope:advanced": true,
           "items": {
-            "title": "Base Layer",
             "anyOf": [
               {
                 "description": "A tiled raster layer loaded on-demand from a URL template (e.g., base maps).",
@@ -72,8 +73,8 @@
                     "default": 1,
                     "description": "Set layer transparency from 1 (fully visible) to 0 (hidden).",
                     "ecoscope:advanced": true,
-                    "maximum": 1.0,
-                    "minimum": 0.0,
+                    "maximum": 1,
+                    "minimum": 0,
                     "title": "Layer Opacity",
                     "type": "number"
                   }
@@ -97,8 +98,8 @@
                     "default": 1,
                     "description": "Set layer transparency from 1 (fully visible) to 0 (hidden).",
                     "ecoscope:advanced": true,
-                    "maximum": 1.0,
-                    "minimum": 0.0,
+                    "maximum": 1,
+                    "minimum": 0,
                     "title": "Layer Opacity",
                     "type": "number"
                   }
@@ -122,8 +123,8 @@
                     "default": 1,
                     "description": "Set layer transparency from 1 (fully visible) to 0 (hidden).",
                     "ecoscope:advanced": true,
-                    "maximum": 1.0,
-                    "minimum": 0.0,
+                    "maximum": 1,
+                    "minimum": 0,
                     "title": "Layer Opacity",
                     "type": "number"
                   }
@@ -147,8 +148,8 @@
                     "default": 1,
                     "description": "Set layer transparency from 1 (fully visible) to 0 (hidden).",
                     "ecoscope:advanced": true,
-                    "maximum": 1.0,
-                    "minimum": 0.0,
+                    "maximum": 1,
+                    "minimum": 0,
                     "title": "Layer Opacity",
                     "type": "number"
                   }
@@ -172,8 +173,8 @@
                     "default": 1,
                     "description": "Set layer transparency from 1 (fully visible) to 0 (hidden).",
                     "ecoscope:advanced": true,
-                    "maximum": 1.0,
-                    "minimum": 0.0,
+                    "maximum": 1,
+                    "minimum": 0,
                     "title": "Layer Opacity",
                     "type": "number"
                   }
@@ -195,8 +196,8 @@
                     "default": 1,
                     "description": "Set layer transparency from 1 (fully visible) to 0 (hidden).",
                     "ecoscope:advanced": true,
-                    "maximum": 1.0,
-                    "minimum": 0.0,
+                    "maximum": 1,
+                    "minimum": 0,
                     "title": "Custom Layer Opacity",
                     "type": "number"
                   },
@@ -216,12 +217,11 @@
                 "title": "Custom Layer (Advanced)",
                 "type": "object"
               }
-            ]
+            ],
+            "title": "Base Layer"
           },
           "title": " ",
-          "type": "array",
-          "description": "Select tile layers to use as base layers in map outputs. The first layer in the list will be the bottommost layer displayed.",
-          "ecoscope:advanced": true
+          "type": "array"
         }
       },
       "type": "object",
@@ -232,23 +232,19 @@
       "additionalProperties": false,
       "properties": {
         "since": {
+          "description": "The start time",
           "format": "date-time",
           "title": "Since",
-          "type": "string",
-          "description": "The start time"
+          "type": "string"
         },
         "until": {
+          "description": "The end time",
           "format": "date-time",
           "title": "Until",
-          "type": "string",
-          "description": "The end time"
+          "type": "string"
         },
         "timezone": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/TimezoneInfo"
-            }
-          ],
+          "$ref": "#/$defs/TimezoneInfo",
           "default": null,
           "title": "Timezone"
         }
@@ -270,6 +266,7 @@
               "temporal_index": "__quarter__"
             }
           ],
+          "description": "            Specify how the data should be grouped to create the views for your dashboard.\n            This field is optional; if left blank, all the data will appear in a single view.\n            ",
           "items": {
             "anyOf": [
               {
@@ -282,8 +279,7 @@
             "title": "Group by"
           },
           "title": " ",
-          "type": "array",
-          "description": "            Specify how the data should be grouped to create the views for your dashboard.\n            This field is optional; if left blank, all the data will appear in a single view.\n            "
+          "type": "array"
         }
       },
       "type": "object",
@@ -294,22 +290,31 @@
       "additionalProperties": false,
       "properties": {
         "event_types": {
+          "description": "",
           "items": {
             "type": "string"
           },
           "title": "Event Types",
           "type": "array",
-          "description": "",
+          "ecoscope:transform": [
+            {
+              "transformer": "EarthRangerEnumResolver",
+              "transformer_kws": {
+                "type": "event_type",
+                "depends_on": "properties.er_client.properties.data_source.properties.name"
+              }
+            }
+          ],
           "default": [
             "community_meeting"
           ]
         },
         "force_point_geometry": {
           "default": true,
-          "title": "Force Point Geometry",
-          "type": "boolean",
           "description": "If True, polygon/multipolygon event geometries are reduced to their centroid. Set False to preserve native geometry types.",
-          "ecoscope:advanced": true
+          "ecoscope:advanced": true,
+          "title": "Force Point Geometry",
+          "type": "boolean"
         }
       },
       "required": [
@@ -345,9 +350,9 @@
           "properties": {
             "colormap": {
               "default": "Blues",
+              "description": "Sequential matplotlib colormap name.",
               "title": "Colormap",
               "type": "string",
-              "description": "Sequential matplotlib colormap name.",
               "oneOf": [
                 {
                   "const": "Blues",
@@ -441,25 +446,25 @@
             },
             "max_classes": {
               "default": 5,
+              "description": "Maximum number of colour classes for the choropleth (Natural Breaks). Automatically reduced if fewer unique values exist in the data.",
               "title": "Max Classes",
-              "type": "integer",
-              "description": "Maximum number of colour classes for the choropleth (Natural Breaks). Automatically reduced if fewer unique values exist in the data."
+              "type": "integer"
             },
             "colormap_min": {
               "default": 0.15,
+              "description": "Start of the colormap range (0\u20131). Increase to skip the lightest shades.",
               "maximum": 1.0,
               "minimum": 0.0,
               "title": "Colormap Min",
-              "type": "number",
-              "description": "Start of the colormap range (0\u20131). Increase to skip the lightest shades."
+              "type": "number"
             },
             "colormap_max": {
               "default": 0.72,
+              "description": "End of the colormap range (0\u20131). Decrease to avoid the darkest shades.",
               "maximum": 1.0,
               "minimum": 0.0,
               "title": "Colormap Max",
-              "type": "number",
-              "description": "End of the colormap range (0\u20131). Decrease to avoid the darkest shades."
+              "type": "number"
             }
           },
           "required": [],
@@ -490,24 +495,24 @@
       "properties": {
         "padding": {
           "default": 0.2,
+          "description": "Viewport padding fraction (0\u20131). Fraction of each viewport edge reserved as margin.",
           "exclusiveMaximum": 1.0,
           "minimum": 0.0,
           "title": "Padding",
           "type": "number",
-          "description": "Viewport padding fraction (0\u20131). Fraction of each viewport edge reserved as margin.",
           "ecoscope:advanced": true
         },
         "viewport_width": {
           "default": 2560,
+          "description": "Width of the map's viewport, in pixels. Should match Screenshot Setting's Width for the sharpest result.",
           "title": "Viewport Width",
-          "type": "integer",
-          "description": "Width of the map's viewport, in pixels. Should match Screenshot Setting's Width for the sharpest result."
+          "type": "integer"
         },
         "viewport_height": {
           "default": 1440,
+          "description": "Height of the map's viewport, in pixels. Should match Screenshot Setting's Height for the sharpest result.",
           "title": "Viewport Height",
-          "type": "integer",
-          "description": "Height of the map's viewport, in pixels. Should match Screenshot Setting's Height for the sharpest result."
+          "type": "integer"
         }
       },
       "required": [],
@@ -518,11 +523,7 @@
       "additionalProperties": false,
       "properties": {
         "config": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/ScreenshotConfig"
-            }
-          ],
+          "$ref": "#/$defs/ScreenshotConfig",
           "default": {
             "width": 1280,
             "height": 720,
@@ -533,7 +534,6 @@
             "max_concurrent_pages": 5,
             "serve_local_files": false
           },
-          "title": "Config",
           "description": "The screenshot configuration",
           "properties": {
             "device_scale_factor": {
@@ -592,29 +592,6 @@
       "required": [],
       "type": "object",
       "title": "Screenshot Setting"
-    },
-    "Community Report": {
-      "type": "object",
-      "description": "Generates the community engagement report as a Word document, one per group.",
-      "ecoscope:task_group": true,
-      "properties": {
-        "generate_report": {
-          "additionalProperties": false,
-          "properties": {
-            "template_path": {
-              "title": "Template Path",
-              "type": "string",
-              "description": "Absolute path to the .docx Jinja2 template file.",
-              "default": "https://raw.githubusercontent.com/wildlife-dynamics/eden-community_engagement/main/resources/templates/community_engagement_report_template.docx"
-            }
-          },
-          "required": [
-            "template_path"
-          ],
-          "type": "object",
-          "title": ""
-        }
-      }
     }
   },
   "$defs": {
