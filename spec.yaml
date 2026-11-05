@@ -1,5 +1,52 @@
 id: community_engagement
 
+metadata:
+  name: Community Engagement
+  description: >-
+    Summarises community meetings recorded in EarthRanger: how many meetings were held,
+    how many people attended, gender and age split, topics raised, and where meetings
+    took place. Produces a dashboard and a Word report for each group (e.g. each quarter).
+  maintainers:
+    - name: Zakariya Husayn
+      email: zakariya@wildlifedynamics.com
+      role: owner
+    - name: Zakariya Husayn
+      email: zakariya@wildlifedynamics.com
+      role: reviewer
+  outputs:
+    - name: Community Engagement Dashboard
+      type: dashboard
+      description: >-
+        Total meetings, total and median participants, a participants box plot, gender
+        and age pie charts, a topics bar chart and a map of meetings per area.
+      indicators:
+        - name: Community Engagement
+    - name: Meetings Map
+      type: map
+      description: >-
+        A choropleth map of the number of meetings per area (e.g. adjudication areas,
+        chiefdoms or forest clusters), with meeting locations.
+      indicators:
+        - name: Community Engagement
+    - name: Engagement Charts
+      type: plot
+      description: >-
+        Participants per meeting, gender split, age split, and topics discussed.
+      indicators:
+        - name: Community Engagement
+    - name: Community Report
+      type: file
+      description: >-
+        A Word report for each group with a summary table, the charts and the meetings map.
+      indicators:
+        - name: Community Engagement
+  license: BSD-3-Clause
+  repository: https://github.com/wildlife-dynamics/eden-community_engagement
+  documentation: https://wildlife-dynamics.github.io/eden-community_engagement/
+  readme: README.md
+  keywords: [community-engagement, community-meetings, earthranger, eden]
+  thumbnail: resources/thumbnail.png
+
 rjsf-overrides:
   $defs:
     ValueGrouper.properties.index_name.oneOf:

@@ -1,6 +1,8 @@
 name: Test Workflows with Published Packages
 
 on:
+  push:
+    branches: [main, ecoscope-web]
   pull_request:
     types: [labeled, unlabeled, opened, synchronize, reopened]
 
