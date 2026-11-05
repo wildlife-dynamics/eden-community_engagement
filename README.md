@@ -52,18 +52,15 @@ groupers:
 events:
   event_types:
     - "community_meeting_new"   # your EarthRanger event type name
-
-generate_report:
-  template_path: "/path/to/template.docx"    # local path or HTTPS URL
 ```
 
-The report template at `resources/templates/community_engagement_report_template.docx` is a Jinja2-powered Word template. You can reference it by local path or host it and pass an HTTPS URL, and the workflow will download it automatically.
+The Word report template ships inside the `ecoscope-workflows-ext-eden` package, so there is nothing to download or configure.
 
 ## Compile & run
 
 ```bash
 # Recompile after any changes to spec.yaml
-bash dev/recompile.sh --install
+pixi run recompile-etd
 
 # Run
 ECOSCOPE_WORKFLOWS_RESULTS="file:///tmp/output" \
