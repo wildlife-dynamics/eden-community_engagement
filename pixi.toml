@@ -12,8 +12,17 @@ channels = [
 
 [dependencies]
 # required for compilation
-wt-compiler = "==0.8.2"
+wt-compiler = "==0.10.2"
 graphviz = "*"
+# 3.15 resolves ruamel.yaml 0.17, which breaks the VERSION.yaml dump
+"ruamel.yaml" = ">=0.18,<0.19"
+python = "3.14.*"
 
 # required for testing
 go-yq = "*"
+
+[tasks.compile-etd]
+cmd = './dev/recompile.sh --install'
+
+[tasks.recompile-etd]
+cmd = './dev/recompile.sh --update'
