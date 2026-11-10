@@ -61,9 +61,6 @@ from ecoscope_workflows_ext_custom.tasks.io import get_current_user as get_curre
 from ecoscope_workflows_ext_custom.tasks.io import html_to_png as html_to_png
 from ecoscope_workflows_ext_custom.tasks.results import draw_boxplot as draw_boxplot
 from ecoscope_workflows_ext_custom.tasks.transformation import (
-    filter_row_values as filter_row_values,
-)
-from ecoscope_workflows_ext_custom.tasks.transformation import (
     select_columns as select_columns,
 )
 from ecoscope_workflows_ext_eden.tasks import add_temporal_idx as add_temporal_idx
@@ -292,30 +289,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             include_null_geometry=True,
             include_display_values=True,
             include_related_events=False,
-            event_states=None,
             **(params.get("events") or {}),
-        )
-        .call()
-    )
-
-    resolved_events = (
-        task(filter_row_values)
-        .validate()
-        .set_task_instance_id("resolved_events")
-        .handle_errors()
-        .with_tracing()
-        .skipif(
-            conditions=[
-                any_is_empty_df,
-                any_dependency_skipped,
-            ],
-            unpack_depth=1,
-        )
-        .partial(
-            df=events,
-            column="state",
-            values=["resolved"],
-            **(params.get("resolved_events") or {}),
         )
         .call()
     )
@@ -334,7 +308,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
-            df=resolved_events,
+            df=events,
             timezone=get_timezone,
             columns=["time"],
             **(params.get("events_tz") or {}),
@@ -1946,6 +1920,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             location_column="meeting_location_level_one",
             workflow_title="Community Engagement Report",
             workflow_subtitle="Wildlife Dynamics",
+            groupers=groupers,
             **(params.get("generate_report") or {}),
         )
         .mapvalues(argnames=["report_data"], argvalues=report_inputs)

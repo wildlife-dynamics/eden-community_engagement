@@ -24,6 +24,8 @@ groupers:
 events:
   event_types:
     - "community_meeting_new"  # EarthRanger event type name for community engagement events
+  event_states:
+    - "resolved"
 
 # feature_group_name:  # uncomment when choropleth is re-enabled
 #   var: ""  # Feature group name in EarthRanger (e.g. adjudication areas, chiefdoms, forest clusters)
