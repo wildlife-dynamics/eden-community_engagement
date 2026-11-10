@@ -296,6 +296,35 @@
           "title": "Event Types",
           "type": "array"
         },
+        "event_states": {
+          "default": null,
+          "description": "Choose to analyze events with a certain state. If left empty, events of all states will be analyzed",
+          "ecoscope:advanced": true,
+          "items": {
+            "type": "string",
+            "oneOf": [
+              {
+                "const": "new",
+                "title": "New"
+              },
+              {
+                "const": "active",
+                "title": "Active"
+              },
+              {
+                "const": "resolved",
+                "title": "Resolved"
+              },
+              {
+                "const": "review",
+                "title": "Review"
+              }
+            ]
+          },
+          "title": "Event State",
+          "type": "array",
+          "uniqueItems": true
+        },
         "force_point_geometry": {
           "default": true,
           "description": "If True, polygon/multipolygon event geometries are reduced to their centroid. Set False to preserve native geometry types.",
@@ -616,6 +645,7 @@
     "events": {
       "ui:order": [
         "event_types",
+        "event_states",
         "force_point_geometry"
       ]
     },

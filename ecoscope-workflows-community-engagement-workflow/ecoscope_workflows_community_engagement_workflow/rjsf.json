@@ -309,6 +309,37 @@
             "community_meeting"
           ]
         },
+        "event_states": {
+          "default": [
+            "resolved"
+          ],
+          "description": "Choose to analyze events with a certain state. If left empty, events of all states will be analyzed",
+          "ecoscope:advanced": false,
+          "items": {
+            "type": "string",
+            "oneOf": [
+              {
+                "const": "new",
+                "title": "New"
+              },
+              {
+                "const": "active",
+                "title": "Active"
+              },
+              {
+                "const": "resolved",
+                "title": "Resolved"
+              },
+              {
+                "const": "review",
+                "title": "Review"
+              }
+            ]
+          },
+          "title": "Event State",
+          "type": "array",
+          "uniqueItems": true
+        },
         "force_point_geometry": {
           "default": true,
           "description": "If True, polygon/multipolygon event geometries are reduced to their centroid. Set False to preserve native geometry types.",
@@ -717,6 +748,10 @@
             {
               "const": "meeting_convener",
               "title": "Meeting Convener"
+            },
+            {
+              "const": "state",
+              "title": "Event State"
             }
           ]
         }
@@ -795,6 +830,7 @@
     "events": {
       "ui:order": [
         "event_types",
+        "event_states",
         "force_point_geometry"
       ]
     },

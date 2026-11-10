@@ -8,7 +8,7 @@ This workflow automates that process. It connects to your EarthRanger site, pull
 
 ## What you get
 
-Point this workflow at your EarthRanger site and configure your time range. It fetches all resolved community meeting events, processes the event details including participant counts, gender breakdown, topics discussed, and meeting location, then groups them however makes sense for your reporting cycle: by quarter, by month, by location area, or any combination.
+Point this workflow at your EarthRanger site and configure your time range. It fetches community meeting events (resolved only by default; you can pick other states), processes the event details including participant counts, gender breakdown, topics discussed, and meeting location, then groups them however makes sense for your reporting cycle: by quarter, by month, by location area, or any combination.
 
 For each group you get a **Word report** with a summary table (total meetings, total participants, median participants per meeting), a participant distribution box plot, a gender breakdown pie chart, a topics bar chart showing what communities are raising, and a choropleth map of meeting frequency across your adjudication areas, chiefdoms, or forest clusters. A **dashboard** consolidates all the stats and charts across groups for a quick programme-level overview.
 
@@ -48,22 +48,22 @@ groupers:
   groupers:
     - temporal_index: "__quarter__"           # quarter | __semester__ | %Y | %Y-%m
   # - index_name: meeting_location_level_one  # group by location instead, or in addition
+  # - index_name: state                       # group by event state (new | active | resolved | review)
 
 events:
   event_types:
     - "community_meeting_new"   # your EarthRanger event type name
-
-generate_report:
-  template_path: "/path/to/template.docx"    # local path or HTTPS URL
+  event_states:                 # leave out for all states
+    - "resolved"
 ```
 
-The report template at `resources/templates/community_engagement_report_template.docx` is a Jinja2-powered Word template. You can reference it by local path or host it and pass an HTTPS URL, and the workflow will download it automatically.
+The Word report template ships inside the `ecoscope-workflows-ext-eden` package, so there is nothing to download or configure.
 
 ## Compile & run
 
 ```bash
 # Recompile after any changes to spec.yaml
-bash dev/recompile.sh --install
+pixi run recompile-etd
 
 # Run
 ECOSCOPE_WORKFLOWS_RESULTS="file:///tmp/output" \
