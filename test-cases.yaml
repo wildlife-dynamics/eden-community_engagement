@@ -22,6 +22,8 @@ base:
     events:
       event_types:
         - "community_meeting_new"
+      event_states:
+        - "resolved"
     event_radius:
       var: 5
     text_layer_size:

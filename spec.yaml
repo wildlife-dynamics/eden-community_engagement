@@ -54,6 +54,8 @@ rjsf-overrides:
         title: Adjudication / Camp / Chiefdom
       - const: meeting_convener
         title: Meeting Convener
+      - const: state
+        title: Event State
 
   uiSchema:
     "ui:order":
@@ -96,6 +98,9 @@ rjsf-overrides:
           depends_on: properties.er_client.properties.data_source.properties.name
     events.properties.event_types.default:
       - community_meeting
+    events.properties.event_states.default:
+      - resolved
+    events.properties.event_states.ecoscope:advanced: false
 
 
     choropleth_view_state.properties.viewport_width.default: 2560
@@ -223,7 +228,7 @@ requirements:
     version: 0.9.2
     channel: conda-forge
   - name: ecoscope-workflows-ext-eden
-    version: "0.0.10"
+    version: "0.0.12"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 
 task-instance-defaults:
@@ -297,21 +302,11 @@ workflow:
       include_null_geometry: true
       include_display_values: true
       include_related_events: false
-      event_states: null
-
-  - name: Filter Resolved Events
-    id: resolved_events
-    task: filter_row_values
-    partial:
-      df: ${{ workflow.events.return }}
-      column: state
-      values:
-        - resolved
 
   - id: events_tz
     task: convert_values_to_timezone
     partial:
-      df: ${{ workflow.resolved_events.return }}
+      df: ${{ workflow.events.return }}
       timezone: ${{ workflow.get_timezone.return }}
       columns:
         - time
@@ -1187,6 +1182,7 @@ workflow:
           location_column: meeting_location_level_one
           workflow_title: Community Engagement Report
           workflow_subtitle: Wildlife Dynamics
+          groupers: ${{ workflow.groupers.return }}
         mapvalues:
           argnames: report_data
           argvalues: ${{ workflow.report_inputs.return }}
